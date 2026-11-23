@@ -1,0 +1,399 @@
+# Especificação da funcionalidade: Editor de blocos com Portugol e execução no Core
+
+**Branch da funcionalidade**: `001-editor-blocos-portugol`
+
+**Criado**: 2026-11-23
+
+**Situação**: Rascunho
+
+**Entrada**: Descrição do usuário: "Leia docs/requisitos.md, CONTRIBUTING.md e .specify/memory/constitution.md. Crie a spec em pt-BR para o escopo mínimo da PoC meuPiá Blocos. Preserve os IDs dos requisitos de origem para rastreabilidade. Escreva histórias de usuário priorizadas com critérios de aceite no formato Dado/Quando/Então. Cubra os três painéis, a geração de Portugol em tempo real, os blocos de variáveis, leia, escreva, se/senão, enquanto, para e operadores, a execução pelo Core real e o salvamento e carregamento de projetos em JSON. Inclua exemplos com entradas e saídas concretas. Por exemplo: dado um projeto JSON com blocos que leem 3, multiplicam por 2 e escrevem o resultado, o Portugol gerado deve ser aceito pelo parser do Core e a execução deve exibir 6. Inclua também um cenário em que o projeto é salvo, reaberto e produz a mesma saída. Descreva o comportamento observável. Deixe arquitetura, bibliotecas e integração técnica para o plan. Preserve a tag congelada da turma como pendente e registre dúvidas de comportamento ainda abertas. Termine após gerar a spec e informe o caminho do arquivo, as histórias e as pendências."
+
+## Cenários de usuário e testes *(obrigatório)*
+
+### User Story 1 — Área de blocos e três painéis visíveis (Priority: P1)
+
+O estudante abre o editor e encontra, em uma única tela, três áreas identificadas:
+uma para montar o programa encaixando blocos, outra com o Portugol gerado e outra
+com a saída da execução. Ele arrasta blocos e os encaixa para formar um programa.
+
+**Por que esta prioridade**: sem os três painéis e a montagem por encaixe, nenhum outro
+fluxo do escopo mínimo pode ser demonstrado ao estudante.
+
+**Teste independente**: abrir o editor, encaixar dois blocos compatíveis e conferir
+que as três áreas estão visíveis e identificadas na mesma tela.
+
+**Cenários de aceitação**:
+
+1. **Dado** que o editor foi aberto, **Quando** a tela é carregada, **Então** são
+   exibidas três áreas distintas e identificadas na mesma tela: "Blocos",
+   "Portugol gerado" e "Saída da execução".
+2. **Dado** a área "Blocos" com blocos disponíveis, **Quando** o estudante arrasta
+   um bloco e o encaixa em outro compatível, **Então** o programa em blocos passa
+   a incluir a nova ligação e nenhuma mensagem de erro é apresentada.
+3. **Dado** um programa em blocos montado, **Quando** o estudante desfaz um
+   encaixe, **Então** o bloco volta a ficar disponível sem apagar os demais
+   blocos do programa.
+
+---
+
+### User Story 2 — Portugol gerado em tempo real (Priority: P1)
+
+À medida que o estudante monta ou altera o programa em blocos, o painel de
+Portugol é atualizado sozinho. Não existe uma ação manual de "gerar código".
+
+**Por que esta prioridade**: a visualização imediata do Portugol é o que cria a ponte
+entre blocos e código escrito, objetivo central da PoC.
+
+**Teste independente**: encaixar um bloco, remover outro e alterar um valor dentro
+de um bloco, conferindo que o texto do painel muda a cada alteração.
+
+**Cenários de aceitação**:
+
+1. **Dado** um programa em blocos com um bloco de escrita, **Quando** o estudante
+   remove esse bloco, **Então** a linha correspondente desaparece do painel
+   "Portugol gerado" sem que ele clique em qualquer ação de geração.
+2. **Dado** um bloco com um valor preenchido, **Quando** o estudante altera esse
+   valor, **Então** o painel "Portugol gerado" passa a mostrar o novo valor.
+3. **Dado** um programa em blocos vazio, **Quando** a tela é exibida, **Então** o
+   painel "Portugol gerado" indica que ainda não há código, sem mensagem de erro.
+
+---
+
+### User Story 3 — Execução no Core real com saída e erros compreensíveis (Priority: P1)
+
+O estudante solicita a execução do Portugol gerado. O código é submetido ao meuPiá
+Core real, aceito pelo parser e executado; a saída aparece no terceiro painel.
+Falhas são explicadas em português do Brasil, sem fechar a aplicação.
+
+**Por que esta prioridade**: é a prova de que o Portugol gerado é válido no ecossistema
+real, e não apenas bonito na tela.
+
+**Teste independente**: carregar o projeto de exemplo abaixo, executar com entrada
+`3` e conferir a saída `6` e a mensagem de erro em um segundo cenário inválido.
+
+**Exemplo concreto de entrada e saída (RF-17)**:
+
+```json
+{
+  "versao": 1,
+  "titulo": "Dobrar a entrada",
+  "blocos": [
+    { "tipo": "leia", "variavel": "x" },
+    { "tipo": "atribuir", "variavel": "x", "expressao": "x * 2" },
+    { "tipo": "escreva", "expressao": "x" }
+  ],
+  "entrada": [3]
+}
+```
+
+Saída esperada no painel "Saída da execução": `6`.
+O Portugol correspondente é aceito pelo parser real do Core; a sintaxe exata é
+ilustrativa e será fixada quando a tag congelada da turma for confirmada.
+
+**Cenários de aceitação**:
+
+1. **Dado** o projeto JSON acima, com entrada `3`, **Quando** o editor gera o
+   Portugol e solicita a execução ao Core real, **Então** o parser real do Core
+   aceita o código e o painel "Saída da execução" exibe `6`.
+2. **Dado** um Portugol gerado com erro de sintaxe, **Quando** a execução é
+   solicitada, **Então** o painel de saída apresenta uma mensagem compreensível
+   em pt-BR e o editor permanece utilizável.
+3. **Dado** um programa com bloco de escrita, **Quando** a execução produz saída,
+   **Então** o texto aparece no painel "Saída da execução" sem ação manual
+   adicional do estudante.
+
+---
+
+### User Story 4 — Variáveis e operadores (Priority: P2)
+
+O estudante declara e atribui variáveis e monta expressões com operadores
+aritméticos, relacionais e lógicos, sempre dentro do conjunto aceito pelo Core.
+
+**Por que esta prioridade**: necessário para expressar os cálculos dos exemplos e das
+condições, mas depende da confirmação da tag para fixar tipos e operadores.
+
+**Teste independente**: montar uma atribuição com operador aritmético e conferir
+que o Portugol gerado é aceito na execução real.
+
+**Cenários de aceitação**:
+
+1. **Dado** um bloco de declaração com um tipo aceito pelo parser na tag
+   confirmada, **Quando** o estudante o encaixa e atribui um valor, **Então** o
+   painel "Portugol gerado" mostra a declaração e a atribuição correspondentes.
+2. **Dado** os operadores disponíveis no escopo mínimo, **Quando** o estudante
+   usa apenas operadores aceitos pelo parser real, **Então** o Portugol gerado é
+   aceito e a execução produz a saída esperada.
+3. **Dado** um operador não aceito na tag confirmada, **Quando** o estudante
+   tenta utilizá-lo, **Então** ele não é oferecido ou é recusado com mensagem em
+   pt-BR, sem gerar Portugol inválido.
+
+---
+
+### User Story 5 — Blocos de leitura e escrita (Priority: P2)
+
+O estudante usa um bloco para ler um valor e outro para escrever o resultado.
+No exemplo de entrada `3`, o cálculo `3 * 2` produz saída `6`.
+
+**Por que esta prioridade**: são os blocos de entrada e saída mais usados na primeira
+experiência do estudante e dão suporte ao exemplo de aceitação da PoC.
+
+**Teste independente**: executar um programa com `leia` e `escreva` usando entrada
+`3` e conferir a saída `6` no painel.
+
+**Cenários de aceitação**:
+
+1. **Dado** um projeto com bloco `leia` e entrada `3`, **Quando** a execução
+   ocorre no Core real, **Então** o valor `3` é usado pelo programa.
+2. **Dado** `x = 3` e um bloco `escreva` com a expressão `x * 2`, **Quando** o
+   programa é executado, **Então** a saída exibida é `6`.
+3. **Dado** que a entrada não foi informada, **Quando** o programa com `leia` é
+   executado, **Então** o painel exibe mensagem em pt-BR explicando a falta da
+   entrada, sem encerrar a aplicação.
+
+---
+
+### User Story 6 — Decisão com se/senão (Priority: P2)
+
+O estudante monta uma decisão com condição e ramo alternativo. O comportamento
+observável é a escolha do ramo conforme o valor lido.
+
+**Por que esta prioridade**: completa o conjunto de controle de fluxo mínimo, permitindo
+programas com decisão simples.
+
+**Teste independente**: executar o mesmo programa com entradas `3` e `-1` e conferir
+que cada ramo produz sua saída específica.
+
+**Cenários de aceitação**:
+
+1. **Dado** um programa com `se x > 0` escrevendo `positivo` e `senão` escrevendo
+   `outro`, **Quando** executado com entrada `3`, **Então** a saída é `positivo`.
+2. **Dado** o mesmo programa, **Quando** executado com entrada `-1`, **Então** a
+   saída é `outro`.
+
+---
+
+### User Story 7 — Repetições com enquanto e para (Priority: P2)
+
+O estudante monta laços com condição e laços com contador, observando a saída
+produzida pela repetição.
+
+**Por que esta prioridade**: fecha a cobertura das estruturas de repetição do escopo
+mínimo, mantendo-se fora do escopo as otimizações e missões futuras.
+
+**Teste independente**: executar um `para` de 1 a 3 e conferir a saída ordenada;
+executar um laço sem término e conferir a mensagem de limite.
+
+**Cenários de aceitação**:
+
+1. **Dado** um bloco `enquanto` com condição `contador < 3` e incremento do
+   contador, **Quando** executado, **Então** o corpo do laço aparece exatamente
+   três vezes na saída.
+2. **Dado** um bloco `para` com contador de 1 a 3, **Quando** executado, **Então**
+   a saída contém `1`, `2` e `3`, nessa ordem.
+3. **Dado** um laço sem término, **Quando** o limite de execução é atingido,
+   **Então** a interface permanece responsiva e exibe mensagem em pt-BR; o limite
+   exato será definido no planejamento.
+
+---
+
+### User Story 8 — Salvar, reabrir e validar projeto em JSON (Priority: P1)
+
+O estudante salva o programa atual em um arquivo JSON, fecha a sessão, reabre o
+arquivo e continua exatamente de onde parou. Um arquivo inválido é recusado sem
+apagar o trabalho aberto.
+
+**Por que esta prioridade**: sem persistência, o estudante perde o programa ao fechar a
+página, e o teste de aceitação ponta a ponta não pode partir de um JSON.
+
+**Teste independente**: salvar o exemplo do dobro da entrada, reabrir o arquivo em
+uma sessão nova e executar novamente com entrada `3`, conferindo a saída `6`.
+
+**Cenários de aceitação**:
+
+1. **Dado** um programa em blocos com entrada `3`, **Quando** o estudante
+   solicita salvar, **Então** é gerado um arquivo JSON com os blocos e os
+   metadados necessários para restaurá-lo.
+2. **Dado** o arquivo salvo, **Quando** o estudante o carrega em uma sessão nova,
+   **Então** os blocos são reconstruídos, o painel "Portugol gerado" é atualizado
+   e, ao executar com a mesma entrada, a saída volta a ser `6`.
+3. **Dado** um arquivo JSON inválido ou incompatível, **Quando** o estudante
+   tenta carregá-lo, **Então** a interface recusa o arquivo com mensagem em
+   pt-BR e o programa atual permanece intacto.
+
+---
+
+### Edge Cases
+
+- Arquivo JSON sem versão, com versão diferente da aceita ou com blocos
+  desconhecidos: recusa em pt-BR, sem substituir o programa aberto.
+- Programa vazio: painel de Portugol indica ausência de código e a execução não
+  apresenta saída, sem mensagem de erro.
+- Entrada ausente ou incompatível com o tipo esperado pelo bloco `leia`:
+  mensagem em pt-BR; o conjunto de tipos depende da tag confirmada.
+- Laço sem término: limite de execução com mensagem em pt-BR e interface
+  responsiva; valor do limite a definir no planejamento.
+- Falha reportada pelo Core: mensagem compreensível em pt-BR no painel de saída,
+  sem encerrar a aplicação e sem perder o programa em blocos.
+- Bloco desencaixado no meio de uma expressão: Portugol gerado permanece
+  coerente ou é sinalizado em pt-BR, sem saída enganosa.
+
+## Requisitos *(obrigatório)*
+
+### Requisitos funcionais
+
+- **FR-001** (RF-01): O editor DEVE exibir, na mesma tela, três áreas
+  identificadas: blocos, Portugol gerado e saída da execução.
+- **FR-002** (RF-02): O estudante DEVE poder arrastar e encaixar blocos para
+  compor um programa.
+- **FR-003** (RF-03): A cada alteração no programa em blocos, o painel de
+  Portugol DEVE ser atualizado automaticamente, sem ação manual.
+- **FR-004** (RF-04, RT-01, RT-02, RT-03): A execução DEVE usar o meuPiá Core
+  real por meio de interfaces públicas da tag confirmada; o Core e seus módulos
+  NÃO DEVEM ser alterados, e a ausência de interface DEVE ser resolvida fora do
+  Core, com registro do problema.
+- **FR-005** (RF-05): O painel de saída DEVE mostrar a saída da execução e
+  apresentar falhas de parsing e execução em mensagens compreensíveis em pt-BR.
+- **FR-006** (RF-06): O editor DEVE oferecer blocos para declarar e atribuir
+  variáveis, respeitando os tipos aceitos pelo parser na tag confirmada.
+- **FR-007** (RF-07): O editor DEVE oferecer um bloco de leitura compatível com
+  o Portugol aceito pelo Core.
+- **FR-008** (RF-08): O editor DEVE oferecer um bloco de escrita cuja execução
+  apareça no painel de saída.
+- **FR-009** (RF-09): O editor DEVE oferecer blocos de decisão com condição e
+  ramo alternativo `senão`.
+- **FR-010** (RF-10): O editor DEVE oferecer bloco de repetição com condição
+  (`enquanto`).
+- **FR-011** (RF-11): O editor DEVE oferecer bloco de repetição com contador
+  (`para`).
+- **FR-012** (RF-12): O editor DEVE oferecer operadores aritméticos,
+  relacionais e lógicos limitados ao conjunto aceito pelo parser real.
+- **FR-013** (RF-13): O editor DEVE salvar o projeto atual em arquivo JSON com
+  os blocos e os metadados necessários para restaurá-lo.
+- **FR-014** (RF-14): O editor DEVE carregar um projeto JSON, reconstruir os
+  blocos e, em consequência, atualizar o Portugol exibido.
+- **FR-015** (RF-15): Um arquivo inválido ou incompatível DEVE ser recusado com
+  mensagem em pt-BR, sem destruir o programa aberto.
+- **FR-016** (RF-16, RT-04): Interface, documentação, rótulos e mensagens ao
+  usuário DEVEM estar em português do Brasil, sem exceção no escopo mínimo.
+- **FR-017** (RF-17): O teste de aceitação DEVE partir de um projeto em blocos
+  em JSON, gerar o Portugol, submetê-lo ao parser real do Core, confirmar a
+  aceitação, executá-lo e conferir a saída esperada, sem mocks do Core.
+- **FR-018** (RF-18): Cada commit DEVE referenciar a task que implementa, e
+  cada task DEVE referenciar o requisito de origem atendido.
+- **FR-019** (RF-19): O núcleo da lógica DEVE ter cobertura mínima de 80%, com
+  relatório gerado e versionado no repositório.
+- **FR-020** (RF-20): O topo do `README.md` DEVE trazer a quantidade real de
+  testes e o percentual real de cobertura, atualizados a cada entrega.
+- **FR-021** (RF-21, RT-07): Os artefatos `constitution`, `spec`, `plan` e
+  `tasks` DEVEM estar versionados antes da implementação.
+- **FR-022** (RF-22): A `spec` DEVE descrever o quê e o porquê em user stories
+  com critérios verificáveis e sem detalhes técnicos; o `plan` DEVE cobrir
+  arquitetura, stack, dados e integrações; as `tasks` DEVEM ser fatias
+  verticais rastreáveis até a spec.
+- **FR-023** (RF-24): A entrega final DEVE prever demonstração ao vivo de até
+  10 minutos, sem código nos slides.
+
+### Entidades principais *(incluir se a funcionalidade envolver dados)*
+
+- **Projeto em blocos**: programa do estudante exportado como JSON; contém
+  versão, título, sequência de blocos e a entrada usada na demonstração.
+- **Bloco**: unidade montável com tipo, parâmetros preenchidos e ligações com
+  outros blocos; exemplos: `leia`, `atribuir`, `escreva`, `se`, `enquanto`,
+  `para` e operadores.
+- **Portugol gerado**: texto resultante do programa em blocos, observável no
+  painel e submetido ao Core na execução.
+- **Saída da execução**: texto produzido pelo Core, incluindo mensagens de erro
+  compreensíveis em pt-BR.
+- **Requisito de origem**: identificador (`RF-`, `RT-`) que vincula cada
+  história, requisito funcional, task e commit.
+
+### Rastreabilidade dos requisitos de origem
+
+| ID | Onde é atendido nesta spec |
+| --- | --- |
+| RF-01 | US1 / FR-001 |
+| RF-02 | US1 / FR-002 |
+| RF-03 | US2 / FR-003 |
+| RF-04 | US3 / FR-004 |
+| RF-05 | US3 / FR-005 |
+| RF-06 | US4 / FR-006 |
+| RF-07 | US5 / FR-007 |
+| RF-08 | US3, US5 / FR-008 |
+| RF-09 | US6 / FR-009 |
+| RF-10 | US7 / FR-010 |
+| RF-11 | US7 / FR-011 |
+| RF-12 | US4 / FR-012 |
+| RF-13 | US8 / FR-013 |
+| RF-14 | US8 / FR-014 |
+| RF-15 | US8 / FR-015 |
+| RF-16 | US3, US8 / FR-016 |
+| RF-17 | US3 / FR-017 |
+| RF-18 | FR-018 |
+| RF-19 | FR-019, SC-005 |
+| RF-20 | FR-020, SC-005 |
+| RF-21 | FR-021, constitution |
+| RF-22 | FR-022, estrutura desta spec |
+| RF-23 | Constitution (Stack Inicial e Restrições Técnicas); detalhes no plan |
+| RF-24 | FR-023, SC-007 |
+| RT-01 | FR-004, Assumptions (tag pendente) |
+| RT-02 | FR-004 |
+| RT-03 | FR-004 |
+| RT-04 | FR-016 |
+| RT-05 | Etapa anterior encerrada; sem efeito nesta spec |
+| RT-06 | US1 a US8; escopo completo (EC-01, EC-02) e bônus (BX-01) fora |
+| RT-07 | FR-021, FR-022, constitution |
+
+## Critérios de sucesso *(obrigatório)*
+
+### Resultados mensuráveis
+
+- **SC-001**: 100% dos cenários de aceitação prioritários (P1) são concluídos
+  com sucesso, do JSON ao Core real e à saída esperada.
+- **SC-002**: O exemplo concreto com entrada `3` produz a saída `6` em 100% das
+  execuções de aceitação.
+- **SC-003**: Em condições normais de uso, a atualização do painel de Portugol
+  ocorre em menos de 1 segundo após cada alteração nos blocos.
+- **SC-004**: 100% dos arquivos JSON inválidos ou incompatíveis são recusados com
+  mensagem em pt-BR, com o programa aberto preservado.
+- **SC-005**: A cada entrega, o relatório de cobertura registra no mínimo 80% do
+  núcleo e o topo do `README.md` mostra a quantidade de testes e o percentual
+  efetivamente medidos.
+- **SC-006**: 100% dos commits verificados na revisão possuem task referenciada,
+  e 100% das tasks possuem requisito de origem referenciado.
+- **SC-007**: A demonstração final dura no máximo 10 minutos e não contém código
+  nos slides.
+- **SC-008**: Em um teste com cinco estudantes iniciantes, pelo menos quatro
+  concluem o fluxo "montar blocos → ver Portugol → executar" sem ajuda.
+
+## Premissas
+
+- O público é formado por estudantes iniciantes em programação, usando um
+  navegador em um computador com tela suficiente para os três painéis.
+- A tag congelada da turma para o meuPiá Core e módulos permanece **pendente de
+  confirmação** (Q-01 em `docs/requisitos.md`, `TODO(TAG_CONGELADA_TURMA)` na
+  constitution). Até a confirmação, nenhuma versão, assinatura de interface ou
+  conjunto definitivo de tipos e operadores é fixado nesta spec.
+- Tipos de variáveis, operadores aceitos e sintaxe exata do Portugol serão
+  confirmados a partir da documentação da tag congelada; os exemplos usam apenas
+  número inteiro e multiplicação por coerência com o pedido da PoC.
+- A entrada do bloco `leia` é fornecida no momento da execução; a forma exata de
+  informá-la no navegador fica para o planejamento.
+- A comparação da saída esperada usa como premissa a normalização de quebras de
+  linha e espaços; a regra definitiva fica para o planejamento.
+- A stack inicial já está registrada na constitution; esta spec não fixa
+  bibliotecas, arquitetura nem integrações técnicas.
+- Escopo completo (`EC-01`, `EC-02`) e bônus (`BX-01`) estão fora desta entrega.
+
+**Dúvidas de comportamento ainda abertas (registradas, sem bloquear a spec):**
+
+- **Q-02/Q-04**: como o Core reporta erros de parsing e de execução e quais
+  mensagens devem ser exibidas ao estudante na tag confirmada.
+- **Q-05**: o formato final do envelope JSON e os campos de metadados além de
+  versão e título; a spec exige apenas que o arquivo permita restaurar o
+  programa.
+- **Q-06**: se a entrada do `leia` vem de campo interativo, fila pré-definida ou
+  outro mecanismo observável pelo estudante.
+- **Q-12**: se a saída é comparada por string exata ou após normalização de
+  quebras de linha, espaços e acentuação.
+- **Q-13**: qual limite de tempo usar para laços sem término e como avisar o
+  estudante sem travar a interface.

@@ -1,0 +1,20 @@
+{
+  "name": "meupia-blocos",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Editor de blocos com Portugol e execução no meuPiá Core",
+  "scripts": {
+    "dev": "node src/ui/estado.js",
+    "test": "vitest run",
+    "test:acceptance": "vitest run tests/acceptance",
+    "coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.9",
+    "vitest": "^2.1.9"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

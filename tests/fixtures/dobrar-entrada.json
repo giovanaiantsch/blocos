@@ -1,0 +1,10 @@
+{
+  "versao": 1,
+  "titulo": "Dobrar a entrada",
+  "blocos": [
+    { "tipo": "leia", "variavel": "x" },
+    { "tipo": "atribuir", "variavel": "x", "expressao": "x * 2" },
+    { "tipo": "escreva", "expressao": "x" }
+  ],
+  "entrada": [3]
+}

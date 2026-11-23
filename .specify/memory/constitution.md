@@ -1,0 +1,160 @@
+<!--
+SYNC IMPACT REPORT
+Version change: N/A → 1.0.0 (adoção inicial; sem versão anterior)
+Modified principles: nenhuma (documento inédito)
+Added sections:
+  - Core Principles (I a V)
+  - Stack Inicial e Restrições Técnicas
+  - Fluxo de Desenvolvimento, Qualidade e Entrega
+  - Governance
+Removed sections: nenhuma
+Follow-up TODOs:
+  - TODO(TAG_CONGELADA_TURMA): tag congelada do Core e módulos pendente de
+    confirmação (Q-01 em docs/requisitos.md).
+  - Versão/licença do Blockly, ferramenta e diretório do relatório de cobertura,
+    convenção exata de commit e regra de comparação da saída a definir no plan.
+-->
+
+# meuPiá Blocos Constitution
+
+## Core Principles
+
+### I. Escopo mínimo primeiro
+
+O editor DEVE entregar, na primeira versão, somente o escopo mínimo
+(RF-01 a RF-24). Funcionalidades de escopo completo (EC-01, EC-02) e bônus
+(BX-01) DEVEM ser registradas como planejamento posterior e NÃO DEVEM entrar
+nesta entrega. Cada decisão DEVE ser avaliada pelo menor conjunto que atende
+aos três painéis, à geração em tempo real, à execução pelo Core, à persistência
+em JSON e à rastreabilidade.
+
+**Justificativa:** a PoC precisa demonstrar o fluxo essencial do estudante sem
+diluir esforço em módulos, missões ou conversão reversa ainda não validados.
+
+### II. Ecossistema intocado e interfaces públicas
+
+Toda comunicação com o meuPiá Core e seus módulos DEVE ocorrer exclusivamente
+por interfaces públicas da tag congelada confirmada. O código do Core e dos
+módulos NÃO DEVE ser modificado, copiado para este repositório nem substituído
+por reimplementação local. Se faltar uma interface pública necessária, a equipe
+DEVE abrir issue no repositório do módulo e resolver a integração com um
+adaptador no editor (RT-03). Mocks do Core SÃO permitidos apenas em testes
+unitários do adaptador, nunca no teste de aceitação.
+
+**Justificativa:** mudanças no compilador pertencem ao repositório do Core; o
+adaptador local preserva o ecossistema e concentra o impacto de qualquer API
+ausente.
+
+### III. Especificação antes do código e rastreabilidade (NON-NEGOTIABLE)
+
+Nenhum código de aplicação DEVE ser escrito antes de `constitution`, `spec`,
+`plan` e `tasks` estarem versionados no repositório. A `spec` DEVE descrever o
+quê e o por quê em user stories com critérios de aceite verificáveis e sem
+detalhes técnicos. O `plan` DEVE cobrir arquitetura, stack, dados e
+integrações. As `tasks` DEVEM ser fatias verticais pequenas. Cada task DEVE
+referenciar ao menos um requisito (`RF-`, `RT-` etc.), e cada commit DEVE
+referenciar a task que implementa, formando a cadeia commit → task →
+requisito. Todo pull request DEVE descrever a mudança e o requisito atendido.
+
+**Justificativa:** a rastreabilidade é o mecanismo que garante que cada linha
+de código e cada revisão possam ser ligadas a uma necessidade aprovada.
+
+### IV. Qualidade verificável: aceitação com Core real e cobertura mínima
+
+O teste de aceitação DEVE partir de um projeto em blocos representado em JSON,
+gerar o Portugol, submetê-lo ao parser real do meuPiá Core, confirmar que o
+parser aceitou o código, executá-lo e comparar a saída obtida com a esperada.
+Nenhum mock do parser ou da execução do Core PODE substituir o Core real nesse
+teste. O núcleo da lógica — gerador de Portugol, adaptador de integração e
+serialização/carga de JSON — DEVE ter cobertura mínima de 80%, com relatório
+gerado e versionado no repositório. Componentes de interface e renderização
+PODEM ficar fora da medição. O topo do `README.md` DEVE trazer a quantidade
+real de testes e o percentual real de cobertura, atualizados a cada entrega;
+valores estimados, zerados sem execução ou copiados de outra versão NÃO DEVEM
+ser publicados.
+
+**Justificativa:** só o Core real comprova que o Portugol gerado é válido, e
+só métricas executadas tornam a qualidade auditável na revisão.
+
+### V. Português do Brasil e experiência do estudante
+
+Interface, documentação, rótulos e todas as mensagens ao usuário DEVEM estar
+em português do Brasil, sem exceção no escopo mínimo. O editor DEVE exibir, na
+mesma tela, três áreas distintas e identificadas: blocos, Portugol gerado e
+saída da execução. Toda alteração no programa em blocos DEVE atualizar o
+Portugol automaticamente, sem ação manual. Falhas de parsing e execução DEVEM
+ser convertidas pelo adaptador em mensagens compreensíveis em pt-BR, sem
+interromper a aplicação. O projeto DEVE ser salvo e carregado em JSON, e um
+arquivo inválido ou incompatível DEVE ser recusado com mensagem em pt-BR sem
+destruir o programa aberto no editor.
+
+**Justificativa:** o idioma único e o feedback imediato reduzem a barreira de
+entrada do estudante e evitam que um erro de JSON apague seu trabalho.
+
+## Stack Inicial e Restrições Técnicas
+
+A stack inicial registada é **Blockly** para a área de encaixe de blocos e
+**JavaScript** para a implementação do editor e da lógica de geração. Esta é a
+escolha inicial da PoC; qualquer troca DEVE ser feita por emenda desta
+constitution, com registro no `plan` e análise de impacto nas tasks e nos
+testes. O gerador de blocos → Portugol DEVE ser próprio e independente de DOM,
+pois a geração padrão do Blockly produz outras linguagens. Toda comunicação com
+o Core DEVE passar por um único adaptador no editor.
+
+A serialização DEVE usar um envelope JSON versionado com `versao`, `titulo` e
+os dados dos blocos. A validação do JSON carregado DEVE ocorrer antes de
+substituir o programa aberto. Tipos de variáveis, operadores aceitos e o
+contrato de entrada/saída do parser DEVEM ser fixados no `plan` a partir da
+documentação da tag confirmada.
+
+TODO(TAG_CONGELADA_TURMA): a tag congelada da turma para o meuPiá Core e módulos
+ainda NÃO foi confirmada (Q-01 em `docs/requisitos.md`). Nenhuma versão DEVE ser
+fixada, nenhuma API específica DEVE ser documentada como definitiva e o teste de
+aceitação NÃO DEVE ser escrito contra uma tag presuntiva até a confirmação pela
+dupla/professor.
+
+A versão e a licença do Blockly, a ferramenta e o diretório do relatório de
+cobertura, a convenção exata de mensagem de commit e a regra de comparação da
+saída (string exata ou normalização) DEVEM ser definidas no `plan`, sem alterar
+os princípios acima.
+
+## Fluxo de Desenvolvimento, Qualidade e Entrega
+
+O fluxo DEVE seguir SDD: especificar → planejar → decompor em tasks →
+implementar → testar → abrir pull request. Os artefatos DEVEM ser escritos ou
+atualizados antes do código correspondente. Cada pull request DEVE descrever a
+mudança, a task implementada, o requisito atendido e o resultado dos testes e
+da cobertura.
+
+Os gates de qualidade são: (1) aceitação ponta a ponta com
+JSON → Portugol → parser real do Core → execução → saída esperada;
+(2) cobertura mínima de 80% sobre o núcleo com relatório versionado;
+(3) métricas reais no topo do `README.md`; (4) cadeia
+commit → task → requisito íntegra; (5) revisão de conformidade com esta
+constitution.
+
+A entrega final DEVE prever demonstração ao vivo de até 10 minutos, sem código
+nos slides. O limite de tempo para laços sem término e a forma de entrada do
+bloco `leia` no navegador DEVEM ser decididos no `plan`, mantendo a interface
+responsiva.
+
+## Governance
+
+Esta constitution prevalece sobre qualquer prática informal do repositório.
+Emendas DEVEM ser propostas com descrição da mudança, justificativa, impacto em
+`spec`/`plan`/`tasks` e plano de migração quando aplicável; a aprovação da
+dupla é necessária antes da aplicação. Toda alteração DEVE atualizar a versão e
+o `LAST_AMENDED_DATE`, além de registrar o impacto no relatório de sincronização.
+
+O versionamento segue SEMVER: **MAJOR** para remoção ou redefinição
+incompatível de princípio; **MINOR** para princípio ou seção novo(a) ou
+orientação materialmente ampliada; **PATCH** para esclarecimentos, correções de
+redação e refinamentos sem mudança semântica.
+
+Toda revisão de pull request DEVE verificar a conformidade com os princípios e
+com os gates desta constitution. Complexidade adicional DEVE ser justificada no
+`plan` e vinculada a um requisito. Para orientação operacional em tempo de
+desenvolvimento, usar os artefatos versionados em `.specify/` e o
+`CONTRIBUTING.md`.
+
+**Version**: 1.0.0 | **Ratified**: 2026-11-23 | **Last Amended**: 2026-11-23

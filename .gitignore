@@ -35,3 +35,10 @@ $RECYCLE.BIN/
 # Variáveis de ambiente locais
 .env
 .env.*
+
+# Node.js
+node_modules/
+dist/
+build/
+
+# Cobertura é versionada conforme plan.md: não ignorar coverage/
