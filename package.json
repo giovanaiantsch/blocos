@@ -4,14 +4,19 @@
   "private": true,
   "type": "module",
   "description": "Editor de blocos com Portugol e execução no meuPiá Core",
+  "license": "Apache-2.0",
   "scripts": {
-    "dev": "node src/ui/estado.js",
+    "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "test": "vitest run",
     "test:acceptance": "vitest run tests/acceptance",
     "coverage": "vitest run --coverage"
   },
+  "dependencies": {
+    "blockly": "12.5.1"
+  },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.9",
+    "vite": "^5.4.20",
     "vitest": "^2.1.9"
   },
   "engines": {
