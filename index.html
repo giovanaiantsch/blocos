@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>meuPiá Blocos</title>
+    <style>
+      :root { font-family: system-ui, sans-serif; color: #1b1b1b; }
+      body { margin: 0; padding: 1rem; }
+      h1 { font-size: 1.4rem; }
+      .controles { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: 1rem; }
+      .painéis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+      .painel { border: 1px solid #d0d0d0; border-radius: 8px; overflow: hidden; min-height: 32rem; }
+      .painel h2 { margin: 0; padding: .6rem .8rem; background: #f2f2f2; font-size: 1rem; border-bottom: 1px solid #d0d0d0; }
+      #blocos { width: 100%; height: 28rem; }
+      #portugol, #saida { margin: 0; padding: .8rem; white-space: pre-wrap; min-height: 8rem; }
+      #entradas { width: 5rem; }
+      @media (max-width: 900px) { .painéis { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <h1>meuPiá Blocos</h1>
+
+    <div class="controles">
+      <label for="titulo">Título do projeto</label>
+      <input id="titulo" type="text" value="Dobrar a entrada" maxlength="80" />
+
+      <label for="entradas">Entradas (uma por linha)</label>
+      <textarea id="entradas" rows="1">3</textarea>
+
+      <input id="arquivo" type="file" accept=".json,application/json" hidden />
+      <button id="carregar" type="button">Carregar JSON</button>
+      <button id="salvar" type="button">Salvar JSON</button>
+      <button id="executar" type="button">Executar</button>
+    </div>
+
+    <main class="painéis">
+      <section class="painel">
+        <h2>Blocos</h2>
+        <div id="blocos"></div>
+      </section>
+      <section class="painel">
+        <h2>Portugol gerado</h2>
+        <pre id="portugol"></pre>
+      </section>
+      <section class="painel">
+        <h2>Saída da execução</h2>
+        <pre id="saida"></pre>
+      </section>
+    </main>
+
+    <script type="module" src="/src/ui/main.js"></script>
+  </body>
+</html>
