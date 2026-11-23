@@ -5,17 +5,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>meuPiá Blocos</title>
     <style>
-      :root { font-family: system-ui, sans-serif; color: #1b1b1b; }
-      body { margin: 0; padding: 1rem; }
-      h1 { font-size: 1.4rem; }
-      .controles { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: 1rem; }
-      .painéis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-      .painel { border: 1px solid #d0d0d0; border-radius: 8px; overflow: hidden; min-height: 32rem; }
-      .painel h2 { margin: 0; padding: .6rem .8rem; background: #f2f2f2; font-size: 1rem; border-bottom: 1px solid #d0d0d0; }
-      #blocos { width: 100%; height: 28rem; }
-      #portugol, #saida { margin: 0; padding: .8rem; white-space: pre-wrap; min-height: 8rem; }
-      #entradas { width: 5rem; }
-      @media (max-width: 900px) { .painéis { grid-template-columns: 1fr; } }
+      :root {
+        --fundo: #f6f8fb;
+        --superficie: #ffffff;
+        --texto: #162334;
+        --titulo: #0b2e4f;
+        --borda: #d8e0e9;
+        --borda-forte: #b9c6d4;
+        --primario: #1557b0;
+        --primario-hover: #0f4389;
+        --espaco: 1rem;
+        color-scheme: light;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        padding: var(--espaco);
+        display: flex;
+        flex-direction: column;
+        gap: var(--espaco);
+        background: var(--fundo);
+        color: var(--texto);
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      h1 { margin: 0; color: var(--titulo); font-size: 1.35rem; }
+      .controles {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .6rem .9rem;
+        padding: .7rem .9rem;
+        background: var(--superficie);
+        border: 1px solid var(--borda);
+        border-radius: 10px;
+      }
+      .controles label { font-size: .85rem; font-weight: 600; color: var(--titulo); }
+      .controles input[type="text"], .controles textarea {
+        min-width: 0;
+        padding: .4rem .55rem;
+        border: 1px solid var(--borda-forte);
+        border-radius: 6px;
+        font: inherit;
+        font-size: .9rem;
+        background: #fff;
+        color: var(--texto);
+      }
+      #titulo { flex: 1 1 14rem; max-width: 20rem; }
+      #entradas { width: 5rem; resize: vertical; }
+      .acoes { display: flex; flex-wrap: wrap; gap: .5rem; margin-left: auto; }
+      button {
+        padding: .45rem .8rem;
+        border-radius: 6px;
+        font: inherit;
+        font-size: .88rem;
+        cursor: pointer;
+      }
+      #carregar, #salvar {
+        background: var(--superficie);
+        color: var(--titulo);
+        border: 1px solid var(--borda-forte);
+      }
+      #carregar:hover, #salvar:hover { background: #eef2f7; }
+      #executar {
+        background: var(--primario);
+        color: #fff;
+        border: 1px solid var(--primario);
+        font-weight: 700;
+        box-shadow: 0 1px 2px rgba(11, 46, 79, .18);
+      }
+      #executar:hover { background: var(--primario-hover); }
+      button:focus-visible, input:focus-visible, textarea:focus-visible {
+        outline: 2px solid var(--primario);
+        outline-offset: 2px;
+      }
+
+      .painéis {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+        gap: var(--espaco);
+      }
+      .painel {
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--superficie);
+        border: 1px solid var(--borda);
+        border-radius: 10px;
+        box-shadow: 0 1px 2px rgba(11, 46, 79, .05);
+      }
+      .painel-blocos { grid-row: 1 / span 2; }
+      .painel h2 {
+        margin: 0;
+        flex: 0 0 auto;
+        padding: .6rem .9rem;
+        background: #eef2f7;
+        color: var(--titulo);
+        border-bottom: 1px solid var(--borda);
+        font-size: .95rem;
+        font-weight: 700;
+      }
+      #blocos { flex: 1 1 auto; min-height: 0; width: 100%; }
+      #portugol, #saida {
+        flex: 1 1 auto;
+        min-height: 0;
+        margin: 0;
+        padding: .9rem;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      #portugol {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: .9rem;
+        line-height: 1.55;
+        white-space: pre;
+      }
+      #saida { font-size: .9rem; line-height: 1.5; color: var(--texto); }
+
+      @media (max-width: 900px) {
+        html, body { height: auto; }
+        body { min-height: 100%; overflow-x: hidden; }
+        .acoes { margin-left: 0; width: 100%; }
+        .painéis {
+          flex: none;
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-rows: auto;
+        }
+        .painel-blocos { grid-row: auto; }
+        #blocos { height: 24rem; min-height: 24rem; }
+        #portugol, #saida { min-height: 9rem; max-height: none; }
+      }
     </style>
   </head>
   <body>
@@ -29,13 +154,15 @@
       <textarea id="entradas" rows="1">3</textarea>
 
       <input id="arquivo" type="file" accept=".json,application/json" hidden />
-      <button id="carregar" type="button">Carregar JSON</button>
-      <button id="salvar" type="button">Salvar JSON</button>
-      <button id="executar" type="button">Executar</button>
+      <div class="acoes">
+        <button id="carregar" type="button">Carregar JSON</button>
+        <button id="salvar" type="button">Salvar JSON</button>
+        <button id="executar" type="button">Executar</button>
+      </div>
     </div>
 
     <main class="painéis">
-      <section class="painel">
+      <section class="painel painel-blocos">
         <h2>Blocos</h2>
         <div id="blocos"></div>
       </section>
