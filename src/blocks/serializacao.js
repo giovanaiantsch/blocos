@@ -1,28 +1,4 @@
-import { blocoParaJSON } from './leia-escreva.js';
-
-const CAMPOS_POR_TIPO = Object.freeze({
-  leia: { variavel: 'VAR' },
-  atribuir: { variavel: 'VAR', expressao: 'EXPR' },
-  escreva: { expressao: 'EXPR' },
-});
-
-/** Converte a pilha de blocos do workspace em `ProjetoJSON.blocos`. */
-export function serializarWorkspace(workspace) {
-  const blocos = [];
-
-  for (const topo of workspace.getTopBlocks(true)) {
-    let atual = topo;
-    while (atual) {
-      const dados = blocoParaJSON(atual);
-      if (dados) {
-        blocos.push(dados);
-      }
-      atual = atual.getNextBlock();
-    }
-  }
-
-  return blocos;
-}
+import { blocoParaJSON, restaurarBloco } from './registro.js';
 
 /**
  * O Blockly expõe `nextConnection`/`previousConnection` como propriedades.
@@ -43,37 +19,67 @@ function conexoes(bloco, tipo) {
   return null;
 }
 
-/** Reconstrói os blocos a partir de um projeto já validado. */
-export function carregarProjetoNoWorkspace(projeto, workspace) {
-  workspace.clear();
+function conectarSequencia(anterior, bloco) {
+  const origem = conexoes(anterior, 'next');
+  const destino = conexoes(bloco, 'previous');
+  if (!origem || !destino) {
+    throw new Error('Não foi possível conectar os blocos: versão do Blockly incompatível.');
+  }
+  origem.connect(destino);
+}
 
-  let anterior = null;
-  for (const dados of projeto.blocos) {
-    const bloco = workspace.newBlock(dados.tipo);
-    const campos = CAMPOS_POR_TIPO[dados.tipo] ?? {};
-
-    for (const [chave, nomeCampo] of Object.entries(campos)) {
-      if (dados[chave] !== undefined) {
-        bloco.setFieldValue(String(dados[chave]), nomeCampo);
-      }
-    }
-
+function renderizar(bloco, workspace) {
+  const comSvg = typeof workspace.getRenderer === 'function' && workspace.getRenderer();
+  if (comSvg && typeof bloco.initSvg === 'function') {
     bloco.initSvg();
+  }
+  if (comSvg && typeof bloco.render === 'function') {
     bloco.render();
+  }
+}
 
+function serializarCadeia(blocoInicial) {
+  const blocos = [];
+  for (let atual = blocoInicial; atual; atual = atual.getNextBlock()) {
+    const dados = blocoParaJSON(atual, serializarCadeia);
+    if (dados) {
+      blocos.push(dados);
+    }
+  }
+  return blocos;
+}
+
+function restaurarCadeia(lista, workspace) {
+  let primeiro = null;
+  let anterior = null;
+
+  for (const dados of lista ?? []) {
+    const bloco = restaurarBloco(dados, workspace, restaurarCadeia);
+    renderizar(bloco, workspace);
     if (anterior) {
-      const origem = conexoes(anterior, 'next');
-      const destino = conexoes(bloco, 'previous');
-      if (!origem || !destino) {
-        throw new Error(
-          `Não foi possível conectar os blocos: versão do Blockly incompatível (${dados.tipo}).`,
-        );
-      }
-      origem.connect(destino);
+      conectarSequencia(anterior, bloco);
+    } else {
+      primeiro = bloco;
     }
     anterior = bloco;
   }
 
+  return primeiro;
+}
+
+/** Converte as pilhas do workspace em `ProjetoJSON.blocos`, inclusive ramos. */
+export function serializarWorkspace(workspace) {
+  const blocos = [];
+  for (const topo of workspace.getTopBlocks(true)) {
+    blocos.push(...serializarCadeia(topo));
+  }
+  return blocos;
+}
+
+/** Reconstrói blocos, expressões e ramos a partir de um projeto já validado. */
+export function carregarProjetoNoWorkspace(projeto, workspace) {
+  workspace.clear();
+  restaurarCadeia(projeto.blocos, workspace);
   return serializarWorkspace(workspace).length;
 }
 
