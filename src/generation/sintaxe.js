@@ -28,6 +28,9 @@ export const SINTAXE = Object.freeze({
   paraAbrir: (variavel, inicio, fim, passo) =>
     `para ${variavel} de ${inicio} ate ${fim} passo ${passo} faca`,
   paraFechar: 'fim_para',
+  usarGrid: 'usar "grid"',
+  gridIniciar: (largura, altura) => `grid_iniciar(${largura}, ${altura})`,
+  gridVisitar: (x, y, passo) => `grid_visitar(${x}, ${y}, ${passo})`,
 });
 
 export default SINTAXE;

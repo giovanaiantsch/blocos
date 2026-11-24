@@ -3,6 +3,7 @@ import { DEFINICOES_SE_SENAO, blocoSeSenaoParaJSON, restaurarBlocoSeSenao } from
 import { DEFINICOES_REPETICOES, blocoRepeticaoParaJSON, restaurarBlocoRepeticao } from './repeticoes.js';
 import { DEFINICOES_VARIAVEIS, blocoVariavelParaJSON, restaurarBlocoVariavel } from './variaveis.js';
 import { DEFINICOES_BLOCOS, blocoParaJSON as blocoLeiaEscrevaParaJSON, restaurarBlocoLeiaEscreva } from './leia-escreva.js';
+import { DEFINICOES_MODULO_GRID, blocoModuloParaJSON, restaurarBlocoModulo } from './modulo-grid.js';
 
 export const DEFINICOES_BLOCOS_TODAS = Object.freeze([
   ...DEFINICOES_BLOCOS,
@@ -10,6 +11,7 @@ export const DEFINICOES_BLOCOS_TODAS = Object.freeze([
   ...DEFINICOES_OPERADORES,
   ...DEFINICOES_SE_SENAO,
   ...DEFINICOES_REPETICOES,
+  ...DEFINICOES_MODULO_GRID,
 ]);
 
 export function registrarBlocos(Blockly) {
@@ -33,6 +35,10 @@ export function blocoParaJSON(bloco, serializarCadeia) {
     case 'enquanto':
     case 'para':
       return blocoRepeticaoParaJSON(bloco, serializarCadeia);
+    case 'usar_grid':
+    case 'grid_iniciar':
+    case 'grid_visitar':
+      return blocoModuloParaJSON(bloco);
     default:
       return null;
   }
@@ -52,6 +58,10 @@ export function restaurarBloco(dados, workspace, restaurarCadeia) {
     case 'enquanto':
     case 'para':
       return restaurarBlocoRepeticao(dados, workspace, restaurarCadeia);
+    case 'usar_grid':
+    case 'grid_iniciar':
+    case 'grid_visitar':
+      return restaurarBlocoModulo(dados, workspace);
     default:
       throw new Error(`Bloco não reconhecido: ${dados.tipo}.`);
   }

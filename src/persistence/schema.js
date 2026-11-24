@@ -29,6 +29,9 @@ const TIPOS_BLOCO = new Set([
   'enquanto',
   'para',
   'operador',
+  'usar_grid',
+  'grid_iniciar',
+  'grid_visitar',
 ]);
 
 const textoNaoVazio = (valor) => typeof valor === 'string' && valor.trim().length > 0;
@@ -125,6 +128,18 @@ function validarBloco(bloco, erros, caminho = 'bloco') {
         erros.push(`${caminho}: o corpo do bloco para deve ser uma lista de blocos.`);
       } else {
         validarBlocos(bloco.corpo, erros, `${caminho}.corpo`);
+      }
+      break;
+    case 'usar_grid':
+      break;
+    case 'grid_iniciar':
+      if (!inteiro(bloco.largura) || !inteiro(bloco.altura)) {
+        erros.push(`${caminho}: ${MENSAGENS.valorInteiroInvalido}`);
+      }
+      break;
+    case 'grid_visitar':
+      if (!inteiro(bloco.x) || !inteiro(bloco.y) || !inteiro(bloco.passo)) {
+        erros.push(`${caminho}: ${MENSAGENS.valorInteiroInvalido}`);
       }
       break;
     default:

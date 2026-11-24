@@ -35,6 +35,31 @@ function exigirTexto(valor) {
   return valor;
 }
 
+function exigirInteiro(valor) {
+  if (!Number.isInteger(valor)) {
+    throw new Error(MENSAGENS.valorInteiroInvalido);
+  }
+  return valor;
+}
+
+/** A diretiva do módulo é deduzida dos blocos, inclusive em ramos aninhados. */
+function contemBloco(blocos, tipo) {
+  for (const bloco of blocos ?? []) {
+    if (!bloco || typeof bloco !== 'object') {
+      continue;
+    }
+    if (
+      bloco.tipo === tipo ||
+      contemBloco(bloco.ramos?.entao, tipo) ||
+      contemBloco(bloco.ramos?.senao, tipo) ||
+      contemBloco(bloco.corpo, tipo)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function gerarBlocos(blocos, nivel) {
   const prefixo = SINTAXE.indentacao.repeat(nivel);
   const linhas = [];
@@ -58,6 +83,25 @@ function gerarBlocos(blocos, nivel) {
       case 'escreva':
       case 'operador':
         linhas.push(prefixo + SINTAXE.escreva(exigirTexto(bloco.expressao)));
+        break;
+      case 'usar_grid':
+        // A diretiva aparece uma vez, depois do cabeçalho (ver gerarPortugol).
+        break;
+      case 'grid_iniciar':
+        linhas.push(
+          prefixo +
+            SINTAXE.gridIniciar(exigirInteiro(bloco.largura), exigirInteiro(bloco.altura)),
+        );
+        break;
+      case 'grid_visitar':
+        linhas.push(
+          prefixo +
+            SINTAXE.gridVisitar(
+              exigirInteiro(bloco.x),
+              exigirInteiro(bloco.y),
+              exigirInteiro(bloco.passo),
+            ),
+        );
         break;
       case 'se': {
         linhas.push(prefixo + SINTAXE.seAbrir(exigirTexto(bloco.condicao)));
@@ -111,7 +155,11 @@ export function gerarPortugol(projeto) {
   const variaveis = new Map();
   coletarVariaveis(blocos, variaveis);
 
-  const linhas = [SINTAXE.cabecalho(exigirTexto(projeto.titulo)), ''];
+  const linhas = [SINTAXE.cabecalho(exigirTexto(projeto.titulo))];
+  if (contemBloco(blocos, 'usar_grid')) {
+    linhas.push(SINTAXE.usarGrid);
+  }
+  linhas.push('');
 
   if (variaveis.size > 0) {
     linhas.push('var');

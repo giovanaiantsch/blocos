@@ -42,6 +42,27 @@
         border-radius: 10px;
       }
       .controles label { font-size: .85rem; font-weight: 600; color: var(--titulo); }
+      .controles select {
+        padding: .4rem .55rem;
+        border: 1px solid var(--borda-forte);
+        border-radius: 6px;
+        font: inherit;
+        font-size: .9rem;
+        background: #fff;
+        color: var(--texto);
+      }
+      .descricao-missao {
+        flex: 1 1 100%;
+        max-height: 5.5rem;
+        overflow: auto;
+        padding: .45rem .6rem;
+        border: 1px dashed var(--borda);
+        border-radius: 6px;
+        background: #f8fafc;
+        color: #40536b;
+        font-size: .82rem;
+        white-space: pre-wrap;
+      }
       .controles input[type="text"], .controles textarea {
         min-width: 0;
         padding: .4rem .55rem;
@@ -153,6 +174,19 @@
 
       <label for="entradas">Entradas (uma por linha)</label>
       <textarea id="entradas" rows="1">3</textarea>
+
+      <label for="missao">Missão</label>
+      <select id="missao">
+        <option value="">Missão livre (toolbox completa)</option>
+        <option value="calculo_gn_taximetro">O Taxímetro — calcular g(n)</option>
+        <option value="fila_prioridade_simples">A Fila VIP — menor custo</option>
+        <option value="grid-visitar">Visitar uma célula do Grid</option>
+        <option value="arquivo">Carregar missão de arquivo…</option>
+      </select>
+      <input id="arquivo-missao" type="file" accept=".json,application/json" hidden />
+      <div id="descricao-missao" class="descricao-missao">
+        Nenhuma missão carregada. Selecione uma missão para ajustar a toolbox.
+      </div>
 
       <input id="arquivo" type="file" accept=".json,application/json" hidden />
       <div class="acoes">

@@ -3,7 +3,10 @@ import * as Blockly from 'blockly';
 import { carregarProjetoNoWorkspace, serializarWorkspace } from '../blocks/serializacao.js';
 import { inicializarBloco, registrarBlocos } from '../blocks/registro.js';
 import { TOOLBOX } from '../blocks/toolbox.js';
+import { toolboxParaMissao } from '../blocks/toolboxParaMissao.js';
 import MENSAGENS from '../messages/index.js';
+import { derivarBlocosPermitidos } from '../missoes/derivar.js';
+import { lerMissao } from '../missoes/schema.js';
 import { VERSAO_PROJETO } from '../persistence/schema.js';
 import { registrarObservador } from './estado.js';
 import { executarProjeto } from './execucao.js';
@@ -56,6 +59,77 @@ let estadoDaInterface = {};
 function exibirMensagem(mensagem, status) {
   estadoDaInterface = registrarMensagem(estadoDaInterface, mensagem, elementos.saida, status);
 }
+
+let selecaoAnterior = elementos.missao.value;
+
+function aplicarMissao(missao) {
+  const tipos = missao ? derivarBlocosPermitidos(missao) : null;
+
+  if (missao) {
+    const tiposNoPrograma = serializarWorkspace(workspace).map((bloco) => bloco.tipo);
+    const incompativeis = tiposNoPrograma.filter((tipo) => !tipos.includes(tipo));
+    if (incompativeis.length > 0 && !window.confirm(MENSAGENS.missaoIncompativel)) {
+      elementos.missao.value = selecaoAnterior;
+      return;
+    }
+  }
+
+  selecaoAnterior = missao?.id ?? '';
+  if (missao) {
+    elementos.missao.value = missao.id;
+  }
+  workspace.updateToolbox(toolboxParaMissao(tipos));
+  elementos.descricaoMissao.textContent = missao
+    ? `${missao.titulo}\n\n${missao.descricao}`
+    : 'Nenhuma missão carregada. Selecione uma missão para ajustar a toolbox.';
+  exibirMensagem(missao ? MENSAGENS.missaoCarregada : MENSAGENS.missaoRemovida);
+}
+
+async function carregarMissaoDoTexto(texto) {
+  const resultado = lerMissao(texto);
+  if (!resultado.valido) {
+    throw new Error(resultado.erros[0]);
+  }
+  aplicarMissao(resultado.missao);
+}
+
+elementos.missao.addEventListener('change', async () => {
+  const escolha = elementos.missao.value;
+  if (escolha === 'arquivo') {
+    elementos.arquivoMissao.click();
+    return;
+  }
+  if (!escolha) {
+    aplicarMissao(null);
+    return;
+  }
+  try {
+    const resposta = await fetch(`/missoes/${encodeURIComponent(escolha)}.json`);
+    if (!resposta.ok) {
+      throw new Error(MENSAGENS.missaoNaoEncontrada);
+    }
+    await carregarMissaoDoTexto(await resposta.text());
+  } catch (erro) {
+    exibirMensagem(erro.message);
+    elementos.missao.value = selecaoAnterior;
+  }
+});
+
+elementos.arquivoMissao.addEventListener('change', async () => {
+  const arquivo = elementos.arquivoMissao.files?.[0];
+  if (!arquivo) {
+    elementos.missao.value = selecaoAnterior;
+    return;
+  }
+  try {
+    await carregarMissaoDoTexto(await arquivo.text());
+  } catch (erro) {
+    exibirMensagem(erro.message);
+    elementos.missao.value = selecaoAnterior;
+  } finally {
+    elementos.arquivoMissao.value = '';
+  }
+});
 
 registrarObservador({
   workspace,
