@@ -5,21 +5,14 @@ import { join } from 'node:path';
 
 import MENSAGENS from '../messages/index.js';
 import { criarResultadoExecucao } from '../persistence/schema.js';
+import { CONFIGURACAO_CORE, configuracaoDoAmbiente } from './configuracao.js';
 
 /**
- * Valores observáveis extraídos do contrato público (`contracts/core-runner.md`).
- * A tag da turma ainda não foi confirmada (T006/T007): comandos, prefixos e
- * caminho do Python são parâmetros injetáveis. Nada aqui importa módulo
- * interno do Core (RT-02).
+ * Interface pública do Core fixada em `configuracao.js` (meuPia/core v1.4.1,
+ * commit 68824d7f9e91f71670f3f466c0a5865a8685f020). Nada aqui importa módulo
+ * interno do Core (RT-02). O alias abaixo é mantido apenas para compatibilidade.
  */
-export const CONFIGURACAO_PROVISORIA = Object.freeze({
-  comandoCompilador: 'meupia',
-  comandoPython: 'python',
-  prefixoSucesso: '[COMPILED SUCCESSFULLY]',
-  prefixoErro: '[COMPILATION ERROR]:',
-  diretorioSaida: 'output',
-  limiteMs: 5000,
-});
+export const CONFIGURACAO_PROVISORIA = CONFIGURACAO_CORE;
 
 const NOME_BASE = 'programa';
 
@@ -53,9 +46,9 @@ function executarCom(diretorioTemporario, opcoes) {
   const {
     portugol,
     entrada = [],
-    limiteMs = CONFIGURACAO_PROVISORIA.limiteMs,
     spawn = spawnSync,
-    configuracao = CONFIGURACAO_PROVISORIA,
+    configuracao = configuracaoDoAmbiente(),
+    limiteMs = configuracao.limiteMs,
   } = opcoes;
 
   const inicio = Date.now();

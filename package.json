@@ -9,6 +9,7 @@
     "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "test": "vitest run",
     "test:acceptance": "vitest run tests/acceptance",
+    "test:core-real": "node scripts/verificar-core.mjs",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {

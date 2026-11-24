@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite';
 
+import { configuracaoDoAmbiente, VERSAO_CORE } from './src/core/configuracao.js';
 import { executarCore } from './src/core/runner.js';
 import { gerarPortugol } from './src/generation/gerador.js';
 
 /**
  * Ponte de desenvolvimento: o navegador não pode chamar uma CLI local.
- * O endpoint repassa o projeto ao runner do Core, que continua usando apenas a
- * interface pública (`meupia` + `python`) e nenhum módulo interno.
+ * O endpoint repassa o projeto ao runner do Core, que usa a versão fixada
+ * (`meuPia/core v1.4.1`) apenas pelas interfaces públicas (`meupia` + `python`).
  */
 function ponteCore() {
   return {
@@ -30,9 +31,10 @@ function ponteCore() {
             const resultado = executarCore({
               portugol: gerarPortugol(projeto),
               entrada: projeto.entrada ?? [],
+              configuracao: configuracaoDoAmbiente(),
             });
             res.statusCode = 200;
-            res.end(JSON.stringify(resultado));
+            res.end(JSON.stringify({ ...resultado, versaoCore: VERSAO_CORE }));
           } catch (erro) {
             res.statusCode = 400;
             res.end(JSON.stringify({

@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
+import { CONFIGURACAO_CORE } from '../../src/core/configuracao.js';
 import { executarCore } from '../../src/core/runner.js';
 import MENSAGENS from '../../src/messages/index.js';
 
@@ -32,6 +33,7 @@ describe('adaptador do Core com CLI simulada (somente teste unitário)', () => {
         portugol: 'algoritmo "Teste"\ninicio\nleia(x)\nescreva(x)\nfimalgoritmo',
         entrada: [3],
         limiteMs: 5000,
+        configuracao: CONFIGURACAO_CORE,
         spawn,
         diretorioTemporario,
       });
@@ -64,6 +66,7 @@ describe('adaptador do Core com CLI simulada (somente teste unitário)', () => {
         portugol: 'algoritmo "Teste"\ninicio\nescreva(1)\nfimalgoritmo',
         entrada: [],
         limiteMs: 5000,
+        configuracao: CONFIGURACAO_CORE,
         spawn,
         diretorioTemporario,
       });
@@ -88,6 +91,7 @@ describe('adaptador do Core com CLI simulada (somente teste unitário)', () => {
         portugol: 'algoritmo inválido',
         entrada: [],
         limiteMs: 5000,
+        configuracao: CONFIGURACAO_CORE,
         spawn,
         diretorioTemporario,
       });

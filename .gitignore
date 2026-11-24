@@ -44,4 +44,7 @@ build/
 # Estado local do agente (não faz parte do projeto)
 .opencode/
 
+# Ambiente local com o Core fixado (criado por npm run test:core-real)
+.venv-core/
+
 # Cobertura é versionada conforme plan.md: não ignorar coverage/
