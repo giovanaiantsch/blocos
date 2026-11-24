@@ -57,9 +57,11 @@ registrarObservador({
 const acoes = criarAcoesPersistencia({
   obterProjeto,
   aplicarProjeto(projeto) {
+    // Restaura primeiro os blocos: se falhar, campos e Portugol antigos
+    // permanecem intactos em vez de mostrar um projeto pela metade.
+    carregarProjetoNoWorkspace(projeto, workspace);
     elementos.titulo.value = projeto.titulo;
     elementos.entradas.value = projeto.entrada.join('\n');
-    carregarProjetoNoWorkspace(projeto, workspace);
   },
   exibirMensagem,
 });

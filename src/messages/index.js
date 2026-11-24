@@ -9,6 +9,7 @@ const MENSAGENS = Object.freeze({
   execucaoIndisponivel: 'Execução indisponível: tag do Core ainda não confirmada.',
   compilacaoIndisponivel: 'A compilação no Core real estará disponível após a confirmação da tag.',
   carregadoComSucesso: 'Projeto carregado com sucesso.',
+  falhaAoRestaurarBlocos: 'Não foi possível restaurar os blocos deste projeto.',
   salvoComSucesso: 'Projeto salvo com sucesso.',
   problemaAoCompilar: 'O Portugol gerado não pôde ser compilado.',
   problemaAoExecutar: 'Ocorreu um erro durante a execução do programa.',

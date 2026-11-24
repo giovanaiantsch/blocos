@@ -24,6 +24,25 @@ export function serializarWorkspace(workspace) {
   return blocos;
 }
 
+/**
+ * O Blockly expõe `nextConnection`/`previousConnection` como propriedades.
+ * Aceitar também os métodos antigos evita que uma versão diferente do pacote
+ * interrompa a importação no meio e deixe campos preenchidos sem blocos.
+ */
+function conexoes(bloco, tipo) {
+  const propriedade = tipo === 'next' ? bloco.nextConnection : bloco.previousConnection;
+  if (propriedade) {
+    return propriedade;
+  }
+
+  const metodo = tipo === 'next' ? 'getNextConnection' : 'getPreviousConnection';
+  if (typeof bloco[metodo] === 'function') {
+    return bloco[metodo]();
+  }
+
+  return null;
+}
+
 /** Reconstrói os blocos a partir de um projeto já validado. */
 export function carregarProjetoNoWorkspace(projeto, workspace) {
   workspace.clear();
@@ -42,8 +61,15 @@ export function carregarProjetoNoWorkspace(projeto, workspace) {
     bloco.initSvg();
     bloco.render();
 
-    if (anterior && anterior.nextConnection && bloco.previousConnection) {
-      anterior.nextConnection.connect(bloco.previousConnection);
+    if (anterior) {
+      const origem = conexoes(anterior, 'next');
+      const destino = conexoes(bloco, 'previous');
+      if (!origem || !destino) {
+        throw new Error(
+          `Não foi possível conectar os blocos: versão do Blockly incompatível (${dados.tipo}).`,
+        );
+      }
+      origem.connect(destino);
     }
     anterior = bloco;
   }

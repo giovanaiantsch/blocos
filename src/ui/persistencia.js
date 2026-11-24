@@ -16,7 +16,12 @@ export function criarAcoesPersistencia({ obterProjeto, aplicarProjeto, exibirMen
         return resultado;
       }
 
-      aplicarProjeto(resultado.projeto);
+      try {
+        aplicarProjeto(resultado.projeto);
+      } catch (erro) {
+        exibirMensagem(MENSAGENS.falhaAoRestaurarBlocos);
+        return { ...resultado, erro };
+      }
       exibirMensagem(MENSAGENS.carregadoComSucesso);
       return resultado;
     },

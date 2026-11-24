@@ -55,6 +55,24 @@ describe('ações de salvar e carregar da interface (T033-T035)', () => {
     expect(interfaceFake.mensagens.at(-1)).toBe(MENSAGENS.jsonInvalido);
   });
 
+  it('avisa em pt-BR se a restauração dos blocos falhar', () => {
+    const interfaceFake = criarInterface();
+    const antes = interfaceFake.obterProjeto();
+    interfaceFake.acoes = criarAcoesPersistencia({
+      obterProjeto: () => interfaceFake.obterProjeto(),
+      aplicarProjeto: () => {
+        throw new Error('Blockly incompatível');
+      },
+      exibirMensagem: (mensagem) => interfaceFake.mensagens.push(mensagem),
+    });
+
+    const resultado = interfaceFake.acoes.carregar(textoFixture);
+
+    expect(resultado.erro.message).toBe('Blockly incompatível');
+    expect(interfaceFake.obterProjeto()).toBe(antes);
+    expect(interfaceFake.mensagens.at(-1)).toBe(MENSAGENS.falhaAoRestaurarBlocos);
+  });
+
   it('salva sem alterar o estado exibido', () => {
     const interfaceFake = criarInterface();
     const antes = interfaceFake.obterProjeto();
