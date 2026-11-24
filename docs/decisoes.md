@@ -66,6 +66,13 @@ e a toolbox consomem a mesma lista. Operadores fora desse catálogo são
 recusados com mensagem em pt-BR. Qualquer divergência confirmada em T007 deve
 ser corrigida primeiro em `sintaxe.js`/`operadores.js`, antes do aceite oficial.
 
+> Atualização de 2026-11-23: as formas efetivamente usadas na demo — `+`, `*`,
+> `>`, `<`, `<-`, `leia`, `escreva`, `se/entao/senao/fim_se`,
+> `enquanto/faca/fim_enquanto` e `para/de/ate/passo/faca/fim_para` — foram
+> **executadas com sucesso no Core `v1.4.1`**, no navegador e pelo adaptador real
+> (`docs/verificacao-final.md`). A tabela continua marcada como provisória apenas
+> porque a confirmação **documental** de D-04/T026/T007 ainda não foi feita.
+
 ## D-05 — Ponte local entre o navegador e a CLI do Core
 
 O navegador não pode chamar `meupia`/`python` diretamente. `vite.config.js`

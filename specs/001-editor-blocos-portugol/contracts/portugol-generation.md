@@ -105,8 +105,11 @@ Sequência observável esperada:
 
 - ✅ Palavras-chave e pontuação de `var`, `leia`, `escreva` e `<-` confirmadas
   pelo aceite real em `v1.4.1`.
-- ⏳ `se/senao`, `enquanto`, `para`, tipos e operadores: sintaxe provisória
-  (D-04), pendente de confirmação documental em T026/T007.
+- ✅ `se/entao/senao/fim_se`, `enquanto/faca/fim_enquanto`,
+  `para/de/ate/passo/faca/fim_para` e operadores `+`, `*`, `>`, `<`: executados
+  com sucesso no navegador com o Core `v1.4.1` (entradas/saídas em
+  `docs/verificacao-final.md`). A confirmação documental de todos os tipos e
+  operadores de D-04/T026/T007 continua pendente.
 - ⏳ Declaração prévia/escopo e formato da mensagem de expressão incompleta:
   pendentes de T026/T007.
 - ✅ Codificação e quebras de linha: saída `6\r\n` no Windows (normalização

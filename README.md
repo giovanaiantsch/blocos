@@ -22,17 +22,21 @@ aceite real como `skipped`; com o Core fixado configurado, os 67 passam.
 A cobertura é medida por `npm run coverage` e abrange o núcleo puro
 (`src/generation/`, `src/persistence/` e `src/core/`), conforme a spec. A
 interface e as definições de blocos são verificadas por testes unitários e
-pela validação no Blockly real; não entram no percentual acima.
+pela validação no Blockly real; não entram no percentual acima. Os números
+acima foram regenerados após o ajuste do `favicon` e permaneceram idênticos.
 
 **Aceite real:** `tests/fixtures/dobrar-entrada.json` com entrada `3` produziu
 saída **`6`** (`status: sucesso`), usando apenas as interfaces públicas do Core:
-`meupia <arquivo.por>` e `python output/<nome>.py`. Evidência completa em
-[`docs/verificacao-final.md`](docs/verificacao-final.md).
+`meupia <arquivo.por>` e `python output/<nome>.py`. No navegador, os dois ramos
+de `se/senão`, `enquanto`, `para`, salvar → reabrir → executar novamente e o
+programa combinado também passaram com o Core `v1.4.1`. Evidência completa em
+[`docs/verificacao-final.md`](docs/verificacao-final.md); roteiro de apresentação
+em [`docs/demo.md`](docs/demo.md).
 
 Os blocos de operadores, `se/senão`, `enquanto` e `para` usam a sintaxe
-**provisória** registrada em `docs/decisoes.md` (D-04) até a confirmação
-documental em T026/T007 **na versão fixada**. O botão Executar chama a CLI real
-por uma ponte local (D-05); o runner e a ponte leem
+registrada em `docs/decisoes.md` (D-04): ela foi **executada com sucesso** na
+versão fixada, mas ainda depende da confirmação documental em T026/T007. O botão
+Executar chama a CLI real por uma ponte local (D-05); o runner e a ponte leem
 `src/core/configuracao.js`, que centraliza a versão e o hash acima.
 
 ### Como reproduzir o aceite com o Core real

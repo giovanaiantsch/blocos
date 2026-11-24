@@ -149,8 +149,8 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 - [x] T029 [P] [US6] Criar `tests/unit/blocks-se-senao.test.js` cobrindo `BlocoSerializado.condicao`, `BlocoSerializado.ramos.entao`, `BlocoSerializado.ramos.senao` e as saídas `positivo`/`outro`; atende RF-09/RF-17/RF-19; depende: T011; verificação: teste falha antes da implementação de T030.
   - Nota de 2026-11-23: teste criado e passando com a sintaxe provisória (D-04); usa `escreva("positivo")` e `escreva("outro")` na saída gerada. A execução real com o Core depende de T007.
-- [ ] T030 [US6] Implementar `src/blocks/se-senao.js` e o gerador de ramos em `src/generation/gerador.js`, usando a sintaxe confirmada em T007; atende RF-09/RF-16/RT-01/RT-04; depende: T007/T021/T029; verificação: `npx vitest run tests/unit/blocks-se-senao.test.js` passa e as duas entradas produzem saídas distintas na interface. **PENDENTE DE CONFIRMAÇÃO DOCUMENTAL NA VERSÃO FIXADA (D-06)**.
-  - Nota de 2026-11-23: gerador de ramos, `src/blocks/se-senao.js` e teste já implementados de forma provisória; as duas saídas (`"positivo"`/`"outro"`) são verificadas no Portugol gerado e no Blockly real. Falta a confirmação documental da sintaxe na versão fixada (D-06).
+- [x] T030 [US6] Implementar `src/blocks/se-senao.js` e o gerador de ramos em `src/generation/gerador.js`, usando a sintaxe confirmada em T007; atende RF-09/RF-16/RT-01/RT-04; depende: T007/T021/T029; verificação: `npx vitest run tests/unit/blocks-se-senao.test.js` passa e as duas entradas produzem saídas distintas na interface.
+  - Nota de 2026-11-23: gerador de ramos, `src/blocks/se-senao.js` e teste implementados. No navegador, com o Core `v1.4.1`, entrada `5` produziu `maior` e entrada `2` produziu `menor` (`status: sucesso` nas duas); evidência em `docs/verificacao-final.md`. A confirmação **documental** da sintaxe continua em T007.
 
 **Checkpoint**: US6 independente.
 
@@ -164,8 +164,8 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 - [x] T031 [P] [US7] Criar `tests/unit/blocks-enquanto-para.test.js` cobrindo `BlocoSerializado.condicao`, `BlocoSerializado.corpo`, `BlocoSerializado.inicio`, `BlocoSerializado.fim` e `BlocoSerializado.passo`, três repetições e interrupção por limite; atende RF-10/RF-11/RF-17/RF-19; depende: T011/T012; verificação: teste falha antes da implementação de T032.
   - Nota de 2026-11-23: teste criado e passando; cobre ida e volta dos laços, as três repetições geradas (`1`, `2`, `3` em `escreva(i)` dentro do `para`) e a mensagem de limite com CLI simulada. A execução real depende de T007.
-- [ ] T032 [US7] Implementar `src/blocks/repeticoes.js` e o gerador de laços em `src/generation/gerador.js`, usando a sintaxe confirmada em T007 e a mensagem de limite de `src/messages/index.js`; atende RF-10/RF-11/RF-16/RT-01/RT-04; depende: T007/T021/T031; verificação: `npx vitest run tests/unit/blocks-enquanto-para.test.js` passa e a interface permanece responsiva após 5 s. **PENDENTE DE CONFIRMAÇÃO DOCUMENTAL NA VERSÃO FIXADA (D-06)**.
-  - Nota de 2026-11-23: gerador de laços, `src/blocks/repeticoes.js` e teste já implementados de forma provisória; `enquanto`/`para` montados no Blockly real e preservados após salvar/reabrir. Falta a confirmação documental da sintaxe na versão fixada (D-06).
+- [x] T032 [US7] Implementar `src/blocks/repeticoes.js` e o gerador de laços em `src/generation/gerador.js`, usando a sintaxe confirmada em T007 e a mensagem de limite de `src/messages/index.js`; atende RF-10/RF-11/RF-16/RT-01/RT-04; depende: T007/T021/T031; verificação: `npx vitest run tests/unit/blocks-enquanto-para.test.js` passa e a interface permanece responsiva após 5 s.
+  - Nota de 2026-11-23: gerador de laços, `src/blocks/repeticoes.js` e teste implementados. No navegador, com o Core `v1.4.1`, `enquanto` produziu `0 / 1 / 2` e `para` produziu `1 / 2 / 3`; o programa combinado produziu `maior / 0 / 1 / 1 / 2` e voltou a produzir o mesmo após salvar e reabrir. Evidência em `docs/verificacao-final.md`. O limite de 5 s segue verificado por teste unitário com CLI simulada; a confirmação documental da sintaxe permanece em T007.
 
 **Checkpoint**: US7 independente; todos os blocos obrigatórios estão cobertos.
 
@@ -181,7 +181,7 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 - [x] T034 [US8] Implementar `src/persistence/salvar.js` serializando `ProjetoJSON.versao`, `ProjetoJSON.titulo`, `ProjetoJSON.blocos` e `ProjetoJSON.entrada` a partir do estado atual, sem estado oculto; atende RF-13/RT-04; depende: T009/T033; verificação: `npx vitest run tests/unit/persistence-salvar.test.js` passa e o arquivo salvo é suficiente para restaurar o projeto em outra sessão.
 - [x] T035 [US8] Implementar `src/ui/persistencia.js` e adicionar as ações "Salvar" e "Carregar" em `index.html`, integrando `src/persistence/salvar.js`, `src/persistence/carregar.js`, `src/ui/estado.js` e as mensagens de `src/messages/index.js`; atende RF-13/RF-14/RF-15/RF-16/RT-04; depende: T016/T021/T023/T034; verificação: carregar inválido mostra mensagem em pt-BR e mantém `EstadoDoEditor.projetoAnterior` intacto.
 - [ ] T036 [US8] Criar `tests/acceptance/reabrir-projeto.test.js` salvando o projeto de T014, carregando-o em sessão nova, confirmando a reconstrução dos blocos e a atualização do Portugol, executando com entrada `3` e conferindo saída `6`, além de recusar JSON malformado, versão incompatível e bloco desconhecido sem apagar o projeto; atende RF-13/RF-14/RF-15/RF-17/RT-04; depende: T017/T035; verificação: `npm run test:acceptance` passa com parser e execução reais.
-  - Nota de 2026-11-23: a reabertura com Portugol preservado foi verificada no Blockly real e em teste de integração; falta o teste de aceite que una reabertura e execução `3 → 6` com o Core fixado.
+  - Nota de 2026-11-23: a reabertura com Portugol preservado foi verificada no Blockly real e em teste de integração. Em 2026-11-23 o fluxo também foi verificado no navegador com o Core fixado: JSON com `se`/`enquanto`/`para` salvo, recarregado e reexecutado com a mesma saída. Falta apenas o **teste de aceite versionado** `tests/acceptance/reabrir-projeto.test.js` que una reabertura e execução `3 → 6`; por isso T036 permanece aberto.
 
 **Checkpoint**: persistência completa e fluxo de reabertura validado com Core real.
 
@@ -194,11 +194,12 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 - [x] T037 Rodar `npm test` e `npx vitest run --coverage`, ajustar testes de `src/generation/`, `src/persistence/` e `src/core/` até `coverage/coverage-summary.json` registrar cobertura mínima de 80% no núcleo; atende RF-19/SC-005; depende: todas as tarefas de implementação; verificação: percentual de linhas do resumo é ≥80% e `npm test` passa sem falhas.
 - [x] T038 Versionar `coverage/index.html`, `coverage/lcov.info` e `coverage/coverage-summary.json`, garantindo que `.gitignore` não ignora `coverage/`; atende RF-19/RT-06; depende: T037; verificação: `git status --short coverage/` mostra os três arquivos como novos ou alterados e `git add coverage/` os inclui no commit.
 - [x] T039 Atualizar o topo de `README.md` com a quantidade real de testes e o percentual real de cobertura lidos de `coverage/coverage-summary.json`, substituindo `Testes: 0 · Cobertura: 0%`; atende RF-20/SC-005; depende: T037; verificação: os números do topo do README são idênticos aos do resumo gerado e não há valores estimados.
-- [ ] T040 Preparar `docs/demo.md` com roteiro de até 10 minutos, sem código nos slides, seguindo o cenário 6 de `quickstart.md` e definindo apresentador (Q-14); atende RF-24/RT-06/SC-007; depende: T036; verificação: roteiro cronometrado termina em ≤10 min, não contém blocos de código e inclui os passos montar → ver Portugol → executar `3` → mostrar `6` → salvar/reabrir → recusar inválido.
+- [x] T040 Preparar `docs/demo.md` com roteiro de até 10 minutos, sem código nos slides, seguindo o cenário 6 de `quickstart.md` e definindo apresentador (Q-14); atende RF-24/RT-06/SC-007; depende: T036; verificação: roteiro cronometrado termina em ≤10 min, não contém blocos de código e inclui os passos montar → ver Portugol → executar `3` → mostrar `6` → salvar/reabrir → recusar inválido.
+  - Nota de 2026-11-23: `docs/demo.md` criado com cronograma de 0:00 a 10:00, apresentador definido (Q-14), ressalva da tag original mantida e todos os passos exigidos. A dependência T036 (teste de aceite de reabertura) continua aberta; o roteiro usa a evidência de navegador já medida.
 - [ ] T041 Auditar em `git log --oneline`, conforme `CONTRIBUTING.md`, se todo commit possui ID de task e requisito `RF-`/`RT-`, corrigindo mensagens para o padrão `task: T0xx — resumo (RF-xx/RT-xx)`; atende RF-18/RT-07/SC-006; depende: todos os commits de implementação; verificação: nenhum commit da branch viola a cadeia commit → task → requisito e os PRs descrevem mudança, task, requisito, testes e cobertura.
   - Nota de 2026-11-23: auditoria de `git log main..HEAD` concluída — todos os 12 commits da branch contêm ID de task e `RF-`/`RT-`. A descrição de PRs fica pendente até a publicação da branch (nenhum push foi feito).
 - [ ] T042 Rodar o `quickstart.md` completo e registrar o resultado em `docs/verificacao-final.md`, incluindo os cinco gates da constitution e a confirmação de que a aceitação usou o Core real; atende RF-17/RF-19/RF-20/RF-24/RT-07; depende: T036/T037/T039/T040/T041; verificação: checklist final em `docs/verificacao-final.md` está integralmente marcado e sem pendência de tag aberta.
-  - Nota de 2026-11-23: `docs/verificacao-final.md` foi atualizado com números medidos, escopo da cobertura, verificação no Blockly real, o erro ENOENT anterior e o aceite real `3 → 6` com o Core fixado. Permanece pendente enquanto T006/T007/T036/T040 não forem concluídos e a tag original não for confirmada.
+  - Nota de 2026-11-23: `docs/verificacao-final.md` foi atualizado com números medidos, escopo da cobertura, verificação no Blockly real, o erro ENOENT anterior, o aceite `3 → 6` e a verificação de navegador de `se/senão`, `enquanto`, `para` e salvar/reabrir/reexecutar. Permanece pendente enquanto T006/T007/T036 não forem concluídos e a tag original não for confirmada; T040 já foi entregue em `docs/demo.md`.
 
 **Checkpoint**: entrega pronta para revisão de conformidade com a constitution.
 
@@ -237,9 +238,9 @@ Ordem adotada a pedido do usuário, com a spec como fonte de requisitos:
 
 **Podem avançar agora** (sem depender da confirmação documental): T001, T002, T003, T004, T008, T009, T010, T011, T012, T014, T015, T016, T020, T022, T024, T029, T031, T033 e T034. T005 depende de decisão externa distinta (versão/licença do Blockly). T037 a T042 são tarefas finais: dependem da conclusão das histórias, não da tag original.
 
-**Dependem diretamente da confirmação documental na versão fixada**: T006 (tag original), T007, T019, T026, T027, T028, T030 e T032. T013 e T017 já foram verificados com o Core `v1.4.1` (D-06).
+**Dependem diretamente da confirmação documental na versão fixada**: T006 (tag original), T007, T019, T026, T027 e T028. T013, T017, T030 e T032 já foram verificados com o Core `v1.4.1` (D-06 e evidência de navegador em `docs/verificacao-final.md`).
 
-**Dependem indiretamente**: T021, T023, T025, T035, T036, T038, T039, T040, T041 e T042 herdam a dependência por encadeamento. T018 foi verificado com a ponte real (D-05/D-06).
+**Dependem indiretamente**: T021, T023, T025, T035, T036, T038, T039, T041 e T042 herdam a dependência por encadeamento. T018 foi verificado com a ponte real (D-05/D-06) e T040 teve o roteiro entregue em `docs/demo.md`; ambos aguardam apenas o fechamento de T036/T042.
 
 ### Oportunidades de paralelismo
 
@@ -267,7 +268,7 @@ Depois, em paralelo:
 Versão substituta fixada pela dupla (D-06):
   v1.4.1 @ 68824d7f... → T013 → T017 (verde)
 Aguardando a dupla/professor:
-  T006 → T007 (confirmação documental) → T019/T026/T030/T032
+  T006 → T007 (confirmação documental) → T019/T026/T027/T028
 ```
 
 ## Estratégia de implementação

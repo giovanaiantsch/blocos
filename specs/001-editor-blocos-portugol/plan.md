@@ -68,7 +68,8 @@ dependência externa conhecida, não como dúvida de escopo.
 | --- | --- |
 | Versão fixada no manifesto e no ambiente de aceitação | `src/core/configuracao.js` (tag + hash) e `.venv-core` com `meupia-core==1.4.1` (ignorado pelo git) |
 | Comando `meupia <arquivo.por>` e prefixos `[COMPILED SUCCESSFULLY]` / `[COMPILATION ERROR]` | Confirmados na saída real da CLI; o runner só devolve `sucesso` com o prefixo de sucesso |
-| Gramática `var`, `leia`, `escreva` e `atribuir` com `<-` | Aceita pelo parser real em `dobrar-entrada.json`; `se/senao`, `enquanto`, `para` e operadores seguem sintaxe provisória (D-04), ainda pendente de confirmação documental |
+| Gramática `var`, `leia`, `escreva` e `atribuir` com `<-` | Aceita pelo parser real em `dobrar-entrada.json` |
+| Gramática de `se/entao/senao/fim_se`, `enquanto/faca/fim_enquanto`, `para/de/ate/passo/faca/fim_para` e operadores `+`, `*`, `>`, `<` | Aceita pelo parser real no navegador: `5 → maior`, `2 → menor`, `0/1/2`, `1/2/3` e combinado `maior/0/1/1/2`; confirmação documental de D-04/T026 ainda pendente (`docs/verificacao-final.md`) |
 | Arquivo Python gerado em `output/<nome>.py` | Confirmado: `✅ Code generated successfully at output\programa.py` |
 | `leia` consome stdin na ordem esperada | Entrada `3` gerou saída `6` (teste real, sem mock) |
 | Idioma dos erros de runtime | Parcial: erro de CLI observado em pt-BR ("Arquivo ... não encontrado."); catálogo de mensagens do Core permanece pendente (T019) |

@@ -12,8 +12,14 @@
 | `npm run coverage` | **93,69% linhas**, **93,69% declarações**, **80,58% desvios**, **94,28% funções** |
 | `npm run test:acceptance` | **1 arquivo, 1 teste, 0 falhas** com o Core real `v1.4.1` |
 | `npm run test:core-real` | **ACEITE REAL: OK (entrada 3 -> saída 6)** |
+| Verificação no navegador | **5/5 cenários** do escopo mínimo com `3 → 6`, `se/senão`, `enquanto`, `para` e reexecução após reabrir; 0 erros de console |
 
 Fonte: `coverage/coverage-summary.json`, regenerado na revisão final.
+
+Durante uma passagem com o Chrome de depuração e o Vite rodando ao mesmo tempo,
+o aceite real excedeu o limite de 5 s por carga na máquina. Os processos
+temporários foram encerrados e a suíte final passou com 67/67; o limite de 5 s
+permanece como requisito de execução, não foi alterado.
 
 ### Escopo da cobertura
 
@@ -101,12 +107,67 @@ npm run test:core-real
 npm run test:acceptance
 ```
 
+## Verificação do escopo mínimo no navegador (Core `v1.4.1`)
+
+Ambiente medido em 2026-11-23: editor servido por
+`http://127.0.0.1:5200/` com `MEUPIA_COMANDO`/`MEUPIA_PYTHON` apontando para
+`.venv-core` (`meupia-core==1.4.1`), Chrome headless com CDP na porta 9333,
+Blockly `12.5.1`. Cada projeto foi carregado pelo input de arquivo real, a
+entrada foi preenchida no painel e o botão **Executar** foi acionado por clique
+real. Nenhum mock foi usado: a ponte `/api/executar` devolveu
+`versaoCore.tag = v1.4.1` e `versaoCore.commit =
+68824d7f9e91f71670f3f466c0a5865a8685f020` em todas as execuções.
+
+| Fixture versionada | Cenário | Entrada | Saída esperada | Saída obtida | Resultado |
+| --- | --- | --- | --- | --- | --- |
+| `tests/fixtures/se-entao.json` | `se` → ramo `entao` | `5` | `maior` | `maior` | OK (`status: sucesso`) |
+| `tests/fixtures/se-senao.json` | `se` → ramo `senao` | `2` | `menor` | `menor` | OK (`status: sucesso`) |
+| `tests/fixtures/enquanto.json` | `enquanto` (`x < 3`) | — | `0`, `1`, `2` | `0`, `1`, `2` | OK (`status: sucesso`) |
+| `tests/fixtures/para.json` | `para` (`1` a `3`, passo `1`) | — | `1`, `2`, `3` | `1`, `2`, `3` | OK (`status: sucesso`) |
+| `tests/fixtures/escopo-minimo-combinado.json` | `se` + `enquanto` + `para` | `5` | `maior`, `0`, `1`, `1`, `2` | `maior`, `0`, `1`, `1`, `2` | OK (`status: sucesso`) |
+
+Comparação realizada após normalizar apenas CRLF/CR para LF. O Portugol gerado
+no programa combinado incluiu `se x > 3 entao` / `senao` / `fim_se`,
+`enquanto n < 2 faca` / `fim_enquanto` e `para i de 1 ate 2 passo 1 faca` /
+`fim_para`, todos aceitos pelo parser real.
+
+**Salvar → reabrir → executar novamente:** o JSON gerado pelo botão **Salvar**
+continha `se`, `enquanto` e `para`; após recarregá-lo, título `Escopo minimo
+combinado`, entrada `5`, 12 blocos no DOM e Portugol idêntico ao anterior
+(`portugolPreservado: true`). A reexecução produziu novamente
+`maior / 0 / 1 / 1 / 2` com `status: sucesso`.
+
+Os três painéis ("Blocos", "Portugol gerado", "Saída da execução") estavam
+visíveis na mesma tela. A primeira passada registrou apenas um `404` de
+`favicon.ico`; foi corrigido com um ícone SVG embutido em `index.html` e a
+reexecução final registrou **0 exceções e 0 erros de console**.
+
+Para repetir a verificação no navegador, suba a ponte com o Core configurado e
+use o roteiro de [`docs/demo.md`](demo.md):
+
+```powershell
+$env:MEUPIA_COMANDO = "$PWD\.venv-core\Scripts\meupia.exe"
+$env:MEUPIA_PYTHON = "$PWD\.venv-core\Scripts\python.exe"
+npx vite --host 127.0.0.1 --port 5200 --strictPort
+```
+
+A suíte foi rodada novamente após a correção do ícone: `npm test` com 18
+arquivos/67 testes/0 falhas e `npm run coverage` com 93,69% linhas e
+declarações, 80,58% desvios e 94,28% funções — mesmos valores do resumo
+versionado, atualizados no topo do `README.md`.
+
 Ainda pendente, mesmo com a versão fixada:
 
-- Confirmação documental de tipos e operadores (T026/T007) — a sintaxe de
-  `se/senão`, `enquanto`, `para` e operadores continua provisória (D-04).
+- Confirmação **documental** de tipos e operadores (T026/T007). A sintaxe de
+  `se/senão`, `enquanto`, `para` e dos operadores usados já foi executada com
+  sucesso no Core fixado, mas a fonte documental da versão ainda não foi
+  registrada como T026 concluído (D-04).
 - Traduções definitivas das mensagens do Core (T019).
-- Aceite de reabertura com execução real (T036) e fechamento de T040/T042.
+- Teste de aceite versionado que una reabertura e execução `3 → 6` (T036). O
+  fluxo foi verificado no navegador, mas `tests/acceptance/reabrir-projeto.test.js`
+  ainda não existe; por isso T036 continua aberto.
+- Fechamento de T042 (quickstart completo, incluindo a recusa de JSON inválido
+  na sessão final) e confirmação da tag original da turma (T006).
 
 ## Publicação da branch
 
