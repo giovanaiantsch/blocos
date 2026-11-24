@@ -16,6 +16,13 @@ const MENSAGENS = Object.freeze({
   salvoComSucesso: 'Projeto salvo com sucesso.',
   problemaAoCompilar: 'O Portugol gerado não pôde ser compilado.',
   problemaAoExecutar: 'Ocorreu um erro durante a execução do programa.',
+  missaoInvalida: 'Missão inválida: informe id, título, descrição e código inicial.',
+  missaoNaoEncontrada: 'Missão não encontrada.',
+  missaoIncompativel:
+    'A missão usa blocos diferentes dos do programa aberto. Deseja continuar?',
+  missaoCarregada: 'Missão carregada. A toolbox foi ajustada para esta missão.',
+  missaoRemovida: 'Missão livre. A toolbox completa foi restaurada.',
+  valorInteiroInvalido: 'Informe um número inteiro para este bloco.',
 });
 
 export function mensagemBlocoDesconhecido(tipo) {

@@ -1,0 +1,7 @@
+{
+  "id": "grid-visitar",
+  "titulo": "Missão: visitar uma célula do Grid",
+  "descricao": "### Desafio\nUse os blocos do módulo **Grid** para iniciar um mapa 3x3, visitar a célula (2, 3) no passo 1 e escrever uma mensagem na saída.\n\nA diretiva `usar \"grid\"` carrega o módulo oficial antes da seção `inicio`.",
+  "codigoInicial": "algoritmo \"Grid do Iniciante\"\nusar \"grid\"\n\ninicio\n    grid_iniciar(3, 3)\n    grid_visitar(2, 3, 1)\n    escreva(\"celula visitada\")\nfim_algoritmo",
+  "codigoTeste": "esperar_igual(2, 3, \"Coordenada visitada\")"
+}
