@@ -12,7 +12,7 @@
 | `npm run coverage` | **93,69% linhas**, **93,69% declarações**, **80,58% desvios**, **94,28% funções** |
 | `npm run test:acceptance` | **1 arquivo, 1 teste, 0 falhas** com o Core real `v1.4.1` |
 | `npm run test:core-real` | **ACEITE REAL: OK (entrada 3 -> saída 6)** |
-| Verificação no navegador | **5/5 cenários** do escopo mínimo com `3 → 6`, `se/senão`, `enquanto`, `para` e reexecução após reabrir; 0 erros de console |
+| Verificação no navegador | **8/8 cenários** com Core `v1.4.1`: `3 → 6`, salvar/reabrir `4 → 8`, dois ramos de `se`, `enquanto`, `para` e combinado com entradas `5` e `2`; passada instrumentada com 0 erros de console |
 
 Fonte: `coverage/coverage-summary.json`, regenerado na revisão final.
 
@@ -156,6 +156,33 @@ arquivos/67 testes/0 falhas e `npm run coverage` com 93,69% linhas e
 declarações, 80,58% desvios e 94,28% funções — mesmos valores do resumo
 versionado, atualizados no topo do `README.md`.
 
+## Validação manual final (Core `v1.4.1`)
+
+Validação concluída no navegador em 2026-11-23, com o editor servido na porta
+5200 e `MEUPIA_COMANDO`/`MEUPIA_PYTHON` apontando para `.venv-core`
+(`meupia-core==1.4.1`). Os projetos foram carregados pelo botão **Carregar
+JSON**, os campos de entrada foram preenchidos na interface e a execução foi
+disparada pelo botão **Executar**; nenhum mock foi usado. As saídas foram
+comparadas **uma por linha**, após normalizar apenas CRLF/CR para LF.
+
+| Projeto | Ação na interface | Entrada | Saída esperada (por linha) | Saída obtida (por linha) | Resultado |
+| --- | --- | --- | --- | --- | --- |
+| `tests/fixtures/dobrar-entrada.json` | Carregar → Executar | `3` | `6` | `6` | OK (`status: sucesso`) |
+| `tests/fixtures/dobrar-entrada.json` | Salvar → Reabrir → alterar entrada → Executar | `4` | `8` | `8` | OK (`status: sucesso`) |
+| `tests/fixtures/escopo-minimo-combinado.json` | Carregar → Executar | `5` | `maior`, `0`, `1`, `1`, `2` | `maior`, `0`, `1`, `1`, `2` | OK (`status: sucesso`) |
+| `tests/fixtures/escopo-minimo-combinado.json` | Carregar → alterar entrada → Executar | `2` | `menor`, `0`, `1`, `1`, `2` | `menor`, `0`, `1`, `1`, `2` | OK (`status: sucesso`) |
+
+A reabertura do `dobrar-entrada.json` restaurou blocos, Portugol e campo de
+entrada; ao trocar apenas `3` por `4`, a saída passou de `6` para `8`. No
+programa combinado, a condição `x > 3` escolheu `maior` com entrada `5` e
+`menor` com entrada `2`, enquanto `enquanto` e `para` produziram as mesmas
+quatro linhas (`0`, `1`, `1`, `2`) depois do ramo.
+
+> Ressalva mantida: a **tag original da turma não pôde ser confirmada**. A dupla
+> fixou `meuPia/core v1.4.1`, commit
+> `68824d7f9e91f71670f3f466c0a5865a8685f020`, como versão substituta usada em
+> todas as execuções acima.
+
 Ainda pendente, mesmo com a versão fixada:
 
 - Confirmação **documental** de tipos e operadores (T026/T007). A sintaxe de
@@ -164,10 +191,13 @@ Ainda pendente, mesmo com a versão fixada:
   registrada como T026 concluído (D-04).
 - Traduções definitivas das mensagens do Core (T019).
 - Teste de aceite versionado que una reabertura e execução `3 → 6` (T036). O
-  fluxo foi verificado no navegador, mas `tests/acceptance/reabrir-projeto.test.js`
-  ainda não existe; por isso T036 continua aberto.
+  fluxo foi verificado manualmente no navegador, inclusive com entrada `4 → 8`
+  após salvar e reabrir, mas `tests/acceptance/reabrir-projeto.test.js` ainda
+  não existe; por isso T036 continua aberto.
 - Fechamento de T042 (quickstart completo, incluindo a recusa de JSON inválido
-  na sessão final) e confirmação da tag original da turma (T006).
+  na sessão final) e confirmação da tag original da turma (T006). A validação
+  manual acima cobre execução e reabertura, mas não substitui o checklist
+  integral do quickstart.
 
 ## Publicação da branch
 
