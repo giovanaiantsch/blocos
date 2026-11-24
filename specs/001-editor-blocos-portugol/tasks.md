@@ -16,7 +16,7 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 - **API/Comando público previsto no plano**: `meupia <arquivo.por>` para compilação/validação (análises léxica, sintática e semântica) e `python output/<nome>.py` para execução. Entry point publicado: `meuPia.compiler:main`.
 - **Não há API documentada** para “parsear string em memória”; o teste de aceitação usa arquivo `.por` e CLI reais, sem mocks (RF-17, RT-02).
-- **Ainda precisa ser verificado na versão da turma**: tag exata, persistência dos comandos e prefixos `[COMPILED SUCCESSFULLY]` / `[COMPILATION ERROR]`, gramática aceita (`var`, `leia`, `escreva`, `se/senao`, `enquanto`, `para`), tipos e operadores, nome/caminho do Python gerado, ordem da stdin e idioma dos erros de runtime. Ver T006/T007 e `plan.md#verificações-dependentes-da-tag-congelada`.
+- **Tag original da turma não confirmada**. A dupla fixou `meuPia/core v1.4.1` (commit `68824d7f9e91f71670f3f466c0a5865a8685f020`, D-06) como versão substituta. Nela foram confirmados: comandos `meupia`/`python`, prefixos `[COMPILED SUCCESSFULLY]` / `[COMPILATION ERROR]:`, gramática de `var`/`leia`/`escreva`/`atribuir`, arquivo `output/programa.py`, stdin do `leia` (entrada `3` → saída `6`) e saída CRLF. Ainda pendente de confirmação documental: `se/senao`, `enquanto`, `para`, tipos/operadores e idioma dos erros de runtime. Ver T006/T007 e `plan.md#verificações-na-versão-fixada`.
 - **Aceitação de ponta a ponta exige o Core real**; mocks ficam apenas em `tests/unit/core-runner.test.js`, conforme a constitution.
 
 ## Formato: `[ID] [P?] [Story] Descrição`
@@ -49,17 +49,19 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 ## Phase 2: Fundamentação (pré-requisitos bloqueantes)
 
-**Objetivo**: validar a tag, criar os núcleos puros (persistência, geração e adaptador) e o fixture canônico. Nenhuma história pode ser considerada concluída antes deste phase.
+**Objetivo**: validar a versão fixada, criar os núcleos puros (persistência, geração e adaptador) e o fixture canônico. Nenhuma história pode ser considerada concluída antes deste phase.
 
-- [ ] T006 Confirmar a tag congelada da turma para meuPiá Core e módulos, registrar versão e data em `docs/decisoes.md` e marcar Q-01 em `docs/requisitos.md` como resolvido; atende RT-01/RT-07/Q-01; depende: dupla/professor; verificação: `docs/decisoes.md` contém a tag exata e a data da confirmação. **BLOQUEADA PELA TAG**.
-- [ ] T007 Executar todas as verificações de `plan.md#verificações-dependentes-da-tag-congelada` e registrar evidências em `docs/decisoes.md` e `research.md`: comandos `meupia`/`python`, prefixos de sucesso/erro, gramática, tipos, operadores, caminho `output/<nome>.py`, stdin do `leia` e idioma dos erros de runtime; atende RF-04/RF-06/RF-07/RF-12/RT-01/RT-02/RT-03; depende: T006; verificação: cada item do checklist possui evidência anexada e `research.md` não mantém a pendência como aberta. **BLOQUEADA PELA TAG**.
+- [ ] T006 Confirmar a tag congelada da turma para meuPiá Core e módulos, registrar versão e data em `docs/decisoes.md` e marcar Q-01 em `docs/requisitos.md` como resolvido; atende RT-01/RT-07/Q-01; depende: dupla/professor; verificação: `docs/decisoes.md` contém a tag exata e a data da confirmação. **TAG ORIGINAL NÃO CONFIRMADA**.
+  - Nota de 2026-11-23: a dupla fixou a versão substituta `v1.4.1` @ `68824d7f9e91f71670f3f466c0a5865a8685f020`, registrada com o hash completo na constitution, no plan, no README e em `docs/decisoes.md` (D-06). A versão **não** é apresentada como a tag original da turma; T006 permanece aberto até confirmação da dupla/professor.
+- [ ] T007 Executar todas as verificações de `plan.md#verificações-na-versão-fixada` e registrar evidências em `docs/decisoes.md` e `research.md`: comandos `meupia`/`python`, prefixos de sucesso/erro, gramática, tipos, operadores, caminho `output/<nome>.py`, stdin do `leia` e idioma dos erros de runtime; atende RF-04/RF-06/RF-07/RF-12/RT-01/RT-02/RT-03; depende: T006; verificação: cada item do checklist possui evidência anexada e `research.md` não mantém a pendência como aberta. **PARCIALMENTE VERIFICADO NA VERSÃO FIXADA**.
+  - Nota de 2026-11-23: comandos, prefixos, `output/programa.py`, stdin e gramática básica confirmados pelo aceite real (D-06); tipos/operadores e erros de runtime ainda dependem de confirmação documental, então a tarefa permanece aberta.
 - [x] T008 [P] Criar `tests/unit/persistence-schema.test.js` cobrindo `data-model.md → ProjetoJSON.versao`, `ProjetoJSON.titulo`, `ProjetoJSON.blocos`, `ProjetoJSON.entrada`, `BlocoSerializado.tipo`, `BlocoSerializado.variavel`, `BlocoSerializado.tipoVariavel`, `BlocoSerializado.expressao`, `BlocoSerializado.condicao`, `BlocoSerializado.inicio`, `BlocoSerializado.fim`, `BlocoSerializado.passo`, `BlocoSerializado.ramos`, `BlocoSerializado.corpo`, `EstadoDoEditor.projeto`, `EstadoDoEditor.portugolGerado`, `EstadoDoEditor.statusExecucao`, `EstadoDoEditor.mensagens`, `EstadoDoEditor.projetoAnterior`, `ResultadoDaExecucao.status`, `ResultadoDaExecucao.saida`, `ResultadoDaExecucao.erro`, `ResultadoDaExecucao.duracaoMs` e `ResultadoDaExecucao.interrompidoPorLimite`, incluindo recusa sem apagar o projeto; atende RF-15/RF-16/RF-19/RT-04; depende: T003/T004; verificação: `npx vitest run tests/unit/persistence-schema.test.js` falha antes da implementação de T009.
 - [x] T009 Implementar `src/persistence/schema.js` com as validações e tipos de `data-model.md → ProjetoJSON.versao`, `ProjetoJSON.titulo`, `ProjetoJSON.blocos`, `ProjetoJSON.entrada`, `BlocoSerializado.tipo`, `BlocoSerializado.variavel`, `BlocoSerializado.tipoVariavel`, `BlocoSerializado.expressao`, `BlocoSerializado.condicao`, `BlocoSerializado.inicio`, `BlocoSerializado.fim`, `BlocoSerializado.passo`, `BlocoSerializado.ramos`, `BlocoSerializado.corpo`, `EstadoDoEditor.projeto`, `EstadoDoEditor.portugolGerado`, `EstadoDoEditor.statusExecucao`, `EstadoDoEditor.mensagens`, `EstadoDoEditor.projetoAnterior`, `ResultadoDaExecucao.status`, `ResultadoDaExecucao.saida`, `ResultadoDaExecucao.erro`, `ResultadoDaExecucao.duracaoMs` e `ResultadoDaExecucao.interrompidoPorLimite`; atende RF-13/RF-14/RF-15/RF-17/RT-04; depende: T008; verificação: `npx vitest run tests/unit/persistence-schema.test.js` passa e nenhuma validação substitui o estado antes da aceitação.
 - [x] T010 [P] Criar `tests/unit/portugol-generation.test.js` verificando determinismo, projeto vazio, expressão incompleta e geração de `leia`, `atribuir` e `escreva` a partir de `BlocoSerializado.tipo`, `BlocoSerializado.variavel` e `BlocoSerializado.expressao`; atende RF-03/RF-06/RF-08/RF-12/RF-17/RF-19; depende: T003; verificação: teste falha antes da implementação de T011.
 - [x] T011 Implementar o gerador puro em `src/generation/gerador.js` e a tabela de sintaxe em `src/generation/sintaxe.js`, produzindo `EstadoDoEditor.portugolGerado` a partir de `BlocoSerializado.tipo`, `BlocoSerializado.variavel`, `BlocoSerializado.tipoVariavel`, `BlocoSerializado.expressao`, `BlocoSerializado.condicao`, `BlocoSerializado.inicio`, `BlocoSerializado.fim`, `BlocoSerializado.passo`, `BlocoSerializado.ramos` e `BlocoSerializado.corpo`, sem DOM e com valores de sintaxe provisórios até T007; atende RF-03/RF-06/RF-08/RF-09/RF-10/RF-11/RF-12/RF-17/RT-02; depende: T010; verificação: `npx vitest run tests/unit/portugol-generation.test.js` passa e o módulo não importa bibliotecas de interface.
 - [x] T012 [P] Criar `tests/unit/core-runner.test.js` com CLI simulada **apenas neste arquivo**, verificando escrita do `.por`, chamada a `meupia`, execução do Python gerado, stdin na ordem de `ProjetoJSON.entrada`, timeout de 5 s e retorno de `ResultadoDaExecucao.status`, `ResultadoDaExecucao.saida`, `ResultadoDaExecucao.erro`, `ResultadoDaExecucao.duracaoMs` e `ResultadoDaExecucao.interrompidoPorLimite`; atende RF-04/RF-05/RF-07/RF-17/RT-02/RT-03; depende: T003; verificação: teste falha antes da implementação de T013 e não existe mock em `tests/acceptance/`.
-- [ ] T013 Implementar `src/core/runner.js` para gravar o Portugol em arquivo `.por` temporário, chamar `meupia <arquivo.por>` e `python output/<nome>.py` conforme confirmado em T007, entregar `ProjetoJSON.entrada` na stdin, aplicar limite de 5000 ms e devolver `ResultadoDaExecucao.status`, `ResultadoDaExecucao.saida`, `ResultadoDaExecucao.erro`, `ResultadoDaExecucao.duracaoMs` e `ResultadoDaExecucao.interrompidoPorLimite`; atende RF-04/RF-05/RF-07/RF-17/RT-01/RT-02/RT-03; depende: T007/T012; verificação: `npx vitest run tests/unit/core-runner.test.js` passa e nenhum módulo interno do Core é importado. **BLOQUEADA PELA TAG**.
-  - Nota de 2026-11-23: a parte independente da versão foi implementada em `src/core/runner.js` com CLI e configuração injetadas; o teste unitário passa. Permanece pendente a confirmação dos comandos/prefixos em T007 para o aceite com o Core real (T017).
+- [x] T013 Implementar `src/core/runner.js` para gravar o Portugol em arquivo `.por` temporário, chamar `meupia <arquivo.por>` e `python output/<nome>.py` conforme confirmado em T007, entregar `ProjetoJSON.entrada` na stdin, aplicar limite de 5000 ms e devolver `ResultadoDaExecucao.status`, `ResultadoDaExecucao.saida`, `ResultadoDaExecucao.erro`, `ResultadoDaExecucao.duracaoMs` e `ResultadoDaExecucao.interrompidoPorLimite`; atende RF-04/RF-05/RF-07/RF-17/RT-01/RT-02/RT-03; depende: T007/T012; verificação: `npx vitest run tests/unit/core-runner.test.js` passa e nenhum módulo interno do Core é importado.
+  - Nota de 2026-11-23: CLI e configuração injetadas em `src/core/runner.js`, com os valores confirmados centralizados em `src/core/configuracao.js`. Teste unitário verde e aceite real verde (D-06); nenhum módulo interno do Core é importado.
 - [x] T014 [P] Criar `tests/fixtures/dobrar-entrada.json` exatamente como o contrato: `ProjetoJSON.versao` igual a `1`, título `Dobrar a entrada`, blocos `leia(x)`, `atribuir(x, "x * 2")` e `escreva(x)`, e `ProjetoJSON.entrada` igual a `[3]`; atende RF-13/RF-17/RT-04; depende: T001; verificação: arquivo é JSON válido e seu conteúdo é idêntico ao exemplo de `contracts/project-json.md`.
 - [x] T015 Criar `tests/unit/persistence-carregar.test.js` verificando que o fixture de T014 carrega, que arquivos inválidos preservam `EstadoDoEditor.projetoAnterior` e que a carga válida atualiza `EstadoDoEditor.projeto` e dispara `EstadoDoEditor.portugolGerado`; atende RF-14/RF-15/RF-17/RT-04; depende: T003/T008/T014; verificação: teste falha antes da implementação de T016.
 - [x] T016 Implementar `src/persistence/carregar.js` aplicando `src/persistence/schema.js` antes de substituir `EstadoDoEditor.projeto`, mantendo `EstadoDoEditor.projetoAnterior` e `EstadoDoEditor.mensagens` em pt-BR em caso de recusa e reconstruindo `ProjetoJSON.blocos`, `ProjetoJSON.titulo` e `ProjetoJSON.entrada`; atende RF-14/RF-15/RF-17/RT-04; depende: T009/T015; verificação: `npx vitest run tests/unit/persistence-carregar.test.js` passa e um JSON inválido não altera o projeto aberto.
@@ -74,11 +76,11 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 **Teste independente**: `npm run test:acceptance` executa `tests/acceptance/dobrar-entrada.test.js` com parser e execução reais, sem mocks, e a saída comparada é `6` após normalizar apenas CRLF/LF.
 
-- [ ] T017 [US3] Criar `tests/acceptance/dobrar-entrada.test.js` que carrega `tests/fixtures/dobrar-entrada.json`, chama `src/generation/gerador.js`, envia o texto a `src/core/runner.js`, exige prova de aceitação do parser real (`[COMPILED SUCCESSFULLY]` confirmado em T007), executa com entrada `3`, compara a saída `6` normalizando somente `\r\n` e `\r` para `\n`, e não usa mock do Core; atende RF-04/RF-05/RF-17/RT-01/RT-02; depende: T007/T011/T013/T016; verificação: `npm run test:acceptance` falha antes da implementação de T018/T019 e passa ao final da história. **BLOQUEADA PELA TAG**.
-- [ ] T018 [US3] Implementar `src/ui/saida-execucao.js` para exibir `ResultadoDaExecucao.saida` e `ResultadoDaExecucao.erro` no painel de saída, atualizar `EstadoDoEditor.statusExecucao` e `EstadoDoEditor.mensagens` e preservar `EstadoDoEditor.projeto` em qualquer falha; atende RF-05/RF-16/RT-04; depende: T004/T013/T017; verificação: erro de sintaxe provocado manualmente aparece em pt-BR e blocos/Portugol permanecem intactos.
-  - Nota de 2026-11-23: `src/ui/saida-execucao.js` já exibe em pt-BR "Execução indisponível: tag do Core ainda não confirmada." sem alterar o projeto. A exibição de erros reais de compilação/execução depende de T007/T017.
-  - Atualização: com a ponte local (D-05), o botão Executar chama a CLI real e já mostra o erro preciso `Erro na compilação: spawnSync meupia ENOENT` sem alterar o projeto. Aceite oficial permanece pendente de T007/T017.
-- [ ] T019 [US3] Implementar `src/core/mensagens-core.js` para converter os prefixos e mensagens confirmados em T007 para frases em pt-BR, incluindo erros de runtime reconhecidos e registro de lacuna em issue quando não houver tradução oficial; atende RF-05/RF-16/RT-03/RT-04; depende: T004/T007/T013; verificação: `npx vitest run tests/unit/core-runner.test.js` cobre pelo menos um erro de compilação e um erro de execução traduzidos. **BLOQUEADA PELA TAG**.
+- [x] T017 [US3] Criar `tests/acceptance/dobrar-entrada.test.js` que carrega `tests/fixtures/dobrar-entrada.json`, chama `src/generation/gerador.js`, envia o texto a `src/core/runner.js`, exige prova de aceitação do parser real (`[COMPILED SUCCESSFULLY]` confirmado em T007), executa com entrada `3`, compara a saída `6` normalizando somente `\r\n` e `\r` para `\n`, e não usa mock do Core; atende RF-04/RF-05/RF-17/RT-01/RT-02; depende: T007/T011/T013/T016; verificação: `npm run test:acceptance` falha antes da implementação de T018/T019 e passa ao final da história.
+  - Nota de 2026-11-23: teste real criado e verde com o Core `v1.4.1` (1 arquivo, 1 teste, 0 falhas). O runner só devolve `sucesso` quando o parser emite `[COMPILED SUCCESSFULLY]`. Nenhum mock do Core em `tests/acceptance/`. Comando de reprodução em `README.md` e `docs/decisoes.md` (D-06).
+- [x] T018 [US3] Implementar `src/ui/saida-execucao.js` para exibir `ResultadoDaExecucao.saida` e `ResultadoDaExecucao.erro` no painel de saída, atualizar `EstadoDoEditor.statusExecucao` e `EstadoDoEditor.mensagens` e preservar `EstadoDoEditor.projeto` em qualquer falha; atende RF-05/RF-16/RT-04; depende: T004/T013/T017; verificação: erro de sintaxe provocado manualmente aparece em pt-BR e blocos/Portugol permanecem intactos.
+  - Nota de 2026-11-23: saída em pt-BR preserva o projeto. Sem a CLI instalada, o painel mostrou `Erro na compilação: spawnSync meupia ENOENT`; com a versão fixada (D-06), passou a mostrar a saída real do Core. Aceite verificado em `tests/acceptance/dobrar-entrada.test.js`.
+- [ ] T019 [US3] Implementar `src/core/mensagens-core.js` para converter os prefixos e mensagens confirmados em T007 para frases em pt-BR, incluindo erros de runtime reconhecidos e registro de lacuna em issue quando não houver tradução oficial; atende RF-05/RF-16/RT-03/RT-04; depende: T004/T007/T013; verificação: `npx vitest run tests/unit/core-runner.test.js` cobre pelo menos um erro de compilação e um erro de execução traduzidos. **PENDENTE DE CONFIRMAÇÃO DOCUMENTAL NA VERSÃO FIXADA (D-06)**.
 
 **Checkpoint**: fluxo crítico validado com Core real. Este é o MVP técnico; a demonstração visual chega nas fases seguintes.
 
@@ -125,11 +127,11 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 ## Phase 7: User Story 4 — Variáveis e operadores (P2)
 
-**Meta**: declarar/atribuir variáveis e usar operadores aritméticos, relacionais e lógicos aceitos pela tag.
+**Meta**: declarar/atribuir variáveis e usar operadores aritméticos, relacionais e lógicos aceitos pela versão fixada (T026/T007).
 
 **Teste independente**: montar uma atribuição com operador aritmético e conferir que o Portugol gerado é aceito na execução real.
 
-- [ ] T026 [US4] Confirmar na documentação da tag os tipos de `BlocoSerializado.tipoVariavel` e os operadores válidos em `BlocoSerializado.expressao`, atualizar `src/generation/sintaxe.js` e `docs/decisoes.md`; atende RF-06/RF-12/RT-01/Q-03; depende: T007; verificação: tabela em `src/generation/sintaxe.js` cita a fonte da tag e `npx vitest run tests/unit/portugol-generation.test.js` passa com os operadores reais. **BLOQUEADA PELA TAG**.
+- [ ] T026 [US4] Confirmar na documentação da tag os tipos de `BlocoSerializado.tipoVariavel` e os operadores válidos em `BlocoSerializado.expressao`, atualizar `src/generation/sintaxe.js` e `docs/decisoes.md`; atende RF-06/RF-12/RT-01/Q-03; depende: T007; verificação: tabela em `src/generation/sintaxe.js` cita a fonte da tag e `npx vitest run tests/unit/portugol-generation.test.js` passa com os operadores reais. **PENDENTE DE CONFIRMAÇÃO DOCUMENTAL NA VERSÃO FIXADA (D-06)**.
 - [ ] T027 [US4] Criar `tests/unit/blocks-variaveis.test.js` e `tests/unit/operadores.test.js` cobrindo declaração, atribuição e cada operador confirmado em T026, além da recusa de operador fora do catálogo; atende RF-06/RF-12/RF-15/RF-19; depende: T026; verificação: testes falham antes da implementação de T028.
   - Nota de 2026-11-23: `tests/unit/operadores.test.js` e `tests/unit/blocks-variaveis.test.js` foram criados e passam com o catálogo provisório (D-04). A marcação oficial depende da confirmação dos operadores/tipos em T026/T007.
 - [ ] T028 [US4] Implementar `src/blocks/variaveis.js`, `src/generation/operadores.js` e a atualização de `src/blocks/toolbox.js`, usando `BlocoSerializado.tipoVariavel` e `BlocoSerializado.expressao` conforme T026; atende RF-06/RF-12/RF-16/RT-04; depende: T027/T026; verificação: `npx vitest run tests/unit/blocks-variaveis.test.js tests/unit/operadores.test.js` passa e nenhum operador não aceito é oferecido.
@@ -147,8 +149,8 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 - [x] T029 [P] [US6] Criar `tests/unit/blocks-se-senao.test.js` cobrindo `BlocoSerializado.condicao`, `BlocoSerializado.ramos.entao`, `BlocoSerializado.ramos.senao` e as saídas `positivo`/`outro`; atende RF-09/RF-17/RF-19; depende: T011; verificação: teste falha antes da implementação de T030.
   - Nota de 2026-11-23: teste criado e passando com a sintaxe provisória (D-04); usa `escreva("positivo")` e `escreva("outro")` na saída gerada. A execução real com o Core depende de T007.
-- [ ] T030 [US6] Implementar `src/blocks/se-senao.js` e o gerador de ramos em `src/generation/gerador.js`, usando a sintaxe confirmada em T007; atende RF-09/RF-16/RT-01/RT-04; depende: T007/T021/T029; verificação: `npx vitest run tests/unit/blocks-se-senao.test.js` passa e as duas entradas produzem saídas distintas na interface. **BLOQUEADA PELA TAG**.
-  - Nota de 2026-11-23: gerador de ramos, `src/blocks/se-senao.js` e teste já implementados de forma provisória; as duas saídas (`"positivo"`/`"outro"`) são verificadas no Portugol gerado e no Blockly real. Falta a execução com o Core na tag confirmada.
+- [ ] T030 [US6] Implementar `src/blocks/se-senao.js` e o gerador de ramos em `src/generation/gerador.js`, usando a sintaxe confirmada em T007; atende RF-09/RF-16/RT-01/RT-04; depende: T007/T021/T029; verificação: `npx vitest run tests/unit/blocks-se-senao.test.js` passa e as duas entradas produzem saídas distintas na interface. **PENDENTE DE CONFIRMAÇÃO DOCUMENTAL NA VERSÃO FIXADA (D-06)**.
+  - Nota de 2026-11-23: gerador de ramos, `src/blocks/se-senao.js` e teste já implementados de forma provisória; as duas saídas (`"positivo"`/`"outro"`) são verificadas no Portugol gerado e no Blockly real. Falta a confirmação documental da sintaxe na versão fixada (D-06).
 
 **Checkpoint**: US6 independente.
 
@@ -162,8 +164,8 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 - [x] T031 [P] [US7] Criar `tests/unit/blocks-enquanto-para.test.js` cobrindo `BlocoSerializado.condicao`, `BlocoSerializado.corpo`, `BlocoSerializado.inicio`, `BlocoSerializado.fim` e `BlocoSerializado.passo`, três repetições e interrupção por limite; atende RF-10/RF-11/RF-17/RF-19; depende: T011/T012; verificação: teste falha antes da implementação de T032.
   - Nota de 2026-11-23: teste criado e passando; cobre ida e volta dos laços, as três repetições geradas (`1`, `2`, `3` em `escreva(i)` dentro do `para`) e a mensagem de limite com CLI simulada. A execução real depende de T007.
-- [ ] T032 [US7] Implementar `src/blocks/repeticoes.js` e o gerador de laços em `src/generation/gerador.js`, usando a sintaxe confirmada em T007 e a mensagem de limite de `src/messages/index.js`; atende RF-10/RF-11/RF-16/RT-01/RT-04; depende: T007/T021/T031; verificação: `npx vitest run tests/unit/blocks-enquanto-para.test.js` passa e a interface permanece responsiva após 5 s. **BLOQUEADA PELA TAG**.
-  - Nota de 2026-11-23: gerador de laços, `src/blocks/repeticoes.js` e teste já implementados de forma provisória; `enquanto`/`para` montados no Blockly real e preservados após salvar/reabrir. Falta a execução com o Core na tag confirmada.
+- [ ] T032 [US7] Implementar `src/blocks/repeticoes.js` e o gerador de laços em `src/generation/gerador.js`, usando a sintaxe confirmada em T007 e a mensagem de limite de `src/messages/index.js`; atende RF-10/RF-11/RF-16/RT-01/RT-04; depende: T007/T021/T031; verificação: `npx vitest run tests/unit/blocks-enquanto-para.test.js` passa e a interface permanece responsiva após 5 s. **PENDENTE DE CONFIRMAÇÃO DOCUMENTAL NA VERSÃO FIXADA (D-06)**.
+  - Nota de 2026-11-23: gerador de laços, `src/blocks/repeticoes.js` e teste já implementados de forma provisória; `enquanto`/`para` montados no Blockly real e preservados após salvar/reabrir. Falta a confirmação documental da sintaxe na versão fixada (D-06).
 
 **Checkpoint**: US7 independente; todos os blocos obrigatórios estão cobertos.
 
@@ -179,6 +181,7 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 - [x] T034 [US8] Implementar `src/persistence/salvar.js` serializando `ProjetoJSON.versao`, `ProjetoJSON.titulo`, `ProjetoJSON.blocos` e `ProjetoJSON.entrada` a partir do estado atual, sem estado oculto; atende RF-13/RT-04; depende: T009/T033; verificação: `npx vitest run tests/unit/persistence-salvar.test.js` passa e o arquivo salvo é suficiente para restaurar o projeto em outra sessão.
 - [x] T035 [US8] Implementar `src/ui/persistencia.js` e adicionar as ações "Salvar" e "Carregar" em `index.html`, integrando `src/persistence/salvar.js`, `src/persistence/carregar.js`, `src/ui/estado.js` e as mensagens de `src/messages/index.js`; atende RF-13/RF-14/RF-15/RF-16/RT-04; depende: T016/T021/T023/T034; verificação: carregar inválido mostra mensagem em pt-BR e mantém `EstadoDoEditor.projetoAnterior` intacto.
 - [ ] T036 [US8] Criar `tests/acceptance/reabrir-projeto.test.js` salvando o projeto de T014, carregando-o em sessão nova, confirmando a reconstrução dos blocos e a atualização do Portugol, executando com entrada `3` e conferindo saída `6`, além de recusar JSON malformado, versão incompatível e bloco desconhecido sem apagar o projeto; atende RF-13/RF-14/RF-15/RF-17/RT-04; depende: T017/T035; verificação: `npm run test:acceptance` passa com parser e execução reais.
+  - Nota de 2026-11-23: a reabertura com Portugol preservado foi verificada no Blockly real e em teste de integração; falta o teste de aceite que una reabertura e execução `3 → 6` com o Core fixado.
 
 **Checkpoint**: persistência completa e fluxo de reabertura validado com Core real.
 
@@ -195,7 +198,7 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 - [ ] T041 Auditar em `git log --oneline`, conforme `CONTRIBUTING.md`, se todo commit possui ID de task e requisito `RF-`/`RT-`, corrigindo mensagens para o padrão `task: T0xx — resumo (RF-xx/RT-xx)`; atende RF-18/RT-07/SC-006; depende: todos os commits de implementação; verificação: nenhum commit da branch viola a cadeia commit → task → requisito e os PRs descrevem mudança, task, requisito, testes e cobertura.
   - Nota de 2026-11-23: auditoria de `git log main..HEAD` concluída — todos os 12 commits da branch contêm ID de task e `RF-`/`RT-`. A descrição de PRs fica pendente até a publicação da branch (nenhum push foi feito).
 - [ ] T042 Rodar o `quickstart.md` completo e registrar o resultado em `docs/verificacao-final.md`, incluindo os cinco gates da constitution e a confirmação de que a aceitação usou o Core real; atende RF-17/RF-19/RF-20/RF-24/RT-07; depende: T036/T037/T039/T040/T041; verificação: checklist final em `docs/verificacao-final.md` está integralmente marcado e sem pendência de tag aberta.
-  - Nota de 2026-11-23: `docs/verificacao-final.md` foi criado com números medidos, escopo da cobertura, verificação no Blockly real e o erro preciso da tentativa com o Core. Permanece pendente enquanto T006/T007/T017/T036 não forem confirmados.
+  - Nota de 2026-11-23: `docs/verificacao-final.md` foi atualizado com números medidos, escopo da cobertura, verificação no Blockly real, o erro ENOENT anterior e o aceite real `3 → 6` com o Core fixado. Permanece pendente enquanto T006/T007/T036/T040 não forem concluídos e a tag original não for confirmada.
 
 **Checkpoint**: entrega pronta para revisão de conformidade com a constitution.
 
@@ -211,9 +214,9 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 - **Phase 4 (US1)**: depende da base e de T018; não depende de outras histórias.
 - **Phase 5 (US2)**: depende de T011 e da interface de US1 para inspeção visual.
 - **Phase 6 (US5)**: depende de T005, T021 e do gerador.
-- **Phase 7 (US4)**: depende de T026 (tag) e do gerador.
-- **Phase 8 (US6)**: depende de T007 (tag) e do gerador.
-- **Phase 9 (US7)**: depende de T007 (tag), gerador e runner.
+- **Phase 7 (US4)**: depende de T026 (confirmação documental na versão fixada) e do gerador.
+- **Phase 8 (US6)**: depende de T007 e do gerador.
+- **Phase 9 (US7)**: depende de T007, gerador e runner.
 - **Phase 10 (US8)**: depende de T016/T021/T023 e da aceitação de US3 para a reabertura real.
 - **Phase 11 (polimento)**: depende de todas as histórias desejadas.
 
@@ -230,13 +233,13 @@ Ordem adotada a pedido do usuário, com a spec como fonte de requisitos:
 7. **US7 (P2)** — `enquanto`/`para`.
 8. **US8 (P1)** — salvar/carregar, movido para depois dos blocos conforme solicitação explícita.
 
-### Separação por disponibilidade da tag congelada
+### Separação por disponibilidade da versão fixada
 
-**Podem avançar agora** (sem depender da confirmação da tag): T001, T002, T003, T004, T008, T009, T010, T011, T012, T014, T015, T016, T020, T022, T024, T029, T031, T033 e T034. T005 depende de decisão externa distinta (versão/licença do Blockly). T037 a T042 são tarefas finais: não dependem da tag em si, mas da conclusão das histórias.
+**Podem avançar agora** (sem depender da confirmação documental): T001, T002, T003, T004, T008, T009, T010, T011, T012, T014, T015, T016, T020, T022, T024, T029, T031, T033 e T034. T005 depende de decisão externa distinta (versão/licença do Blockly). T037 a T042 são tarefas finais: dependem da conclusão das histórias, não da tag original.
 
-**Dependem diretamente da confirmação da tag**: T006, T007, T013, T017, T019, T026, T027, T028, T030 e T032.
+**Dependem diretamente da confirmação documental na versão fixada**: T006 (tag original), T007, T019, T026, T027, T028, T030 e T032. T013 e T017 já foram verificados com o Core `v1.4.1` (D-06).
 
-**Dependem indiretamente da tag**: T018, T021, T023, T025, T035, T036, T038, T039, T040, T041 e T042 herdam a dependência por encadeamento.
+**Dependem indiretamente**: T021, T023, T025, T035, T036, T038, T039, T040, T041 e T042 herdam a dependência por encadeamento. T018 foi verificado com a ponte real (D-05/D-06).
 
 ### Oportunidades de paralelismo
 
@@ -261,8 +264,10 @@ Depois, em paralelo:
   T014 fixture dobra-entrada
   T015 teste de carregamento
 
-Assim que a dupla confirmar a tag:
-  T006 → T007 → T013 → T017
+Versão substituta fixada pela dupla (D-06):
+  v1.4.1 @ 68824d7f... → T013 → T017 (verde)
+Aguardando a dupla/professor:
+  T006 → T007 (confirmação documental) → T019/T026/T030/T032
 ```
 
 ## Estratégia de implementação
@@ -270,7 +275,7 @@ Assim que a dupla confirmar a tag:
 ### MVP primeiro
 
 1. Concluir T001–T005 (T005 conforme disponibilidade da dupla).
-2. Concluir T006–T016; sem T006/T007/T013 não há aceitação com Core real.
+2. Concluir T006–T016; T013/T017 já estão verdes na versão fixada, mas a tag original e a confirmação documental (T006/T007) seguem pendentes.
 3. Concluir Phase 3 (US3) e validar `3 → 6` com parser e execução reais.
 4. **PARAR E VALIDAR**: rodar `npm run test:acceptance`.
 5. MVP técnico pronto; MVP demonstrável exige US1 e US2.

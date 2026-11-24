@@ -7,21 +7,50 @@ programa encaixando blocos, vê o Portugol correspondente nascer ao lado e o
 executa pelo meuPiá Core, tudo no navegador. É o primeiro degrau da trilha
 meuPiá, antes do Portugol escrito.
 
-> 🚧 **Em construção.** Editor implementado com Spec-Driven Development; o
-> aceite final com o Core real depende da tag congelada da turma (Q-01).
+> 🚧 **Em construção.** Editor implementado com Spec-Driven Development. A tag
+> original da turma **não pôde ser confirmada** (Q-01); a dupla fixou
+> **`meuPia/core v1.4.1`**, commit
+> `68824d7f9e91f71670f3f466c0a5865a8685f020`, como versão substituta para a
+> integração e o aceite.
 
-**Testes:** 66 (17 arquivos, 0 falhas) · **Cobertura:** 93,25% de linhas e
-declarações · 81,81% de desvios · 94,11% de funções
+**Testes:** 67 (18 arquivos, 0 falhas) · **Cobertura:** 93,69% de linhas e
+declarações · 80,58% de desvios · 94,28% de funções
+
+Sem `MEUPIA_COMANDO`/`MEUPIA_PYTHON`, `npm test` executa 66 testes e marca o
+aceite real como `skipped`; com o Core fixado configurado, os 67 passam.
 
 A cobertura é medida por `npm run coverage` e abrange o núcleo puro
 (`src/generation/`, `src/persistence/` e `src/core/`), conforme a spec. A
 interface e as definições de blocos são verificadas por testes unitários e
 pela validação no Blockly real; não entram no percentual acima.
 
+**Aceite real:** `tests/fixtures/dobrar-entrada.json` com entrada `3` produziu
+saída **`6`** (`status: sucesso`), usando apenas as interfaces públicas do Core:
+`meupia <arquivo.por>` e `python output/<nome>.py`. Evidência completa em
+[`docs/verificacao-final.md`](docs/verificacao-final.md).
+
 Os blocos de operadores, `se/senão`, `enquanto` e `para` usam a sintaxe
-**provisória** registrada em `docs/decisoes.md` (D-04) até a confirmação da tag.
-O botão Executar chama a CLI real do meuPiá Core por uma ponte local (D-05);
-sem o comando `meupia` instalado, a saída informa o erro do processo.
+**provisória** registrada em `docs/decisoes.md` (D-04) até a confirmação
+documental em T026/T007 **na versão fixada**. O botão Executar chama a CLI real
+por uma ponte local (D-05); o runner e a ponte leem
+`src/core/configuracao.js`, que centraliza a versão e o hash acima.
+
+### Como reproduzir o aceite com o Core real
+
+```powershell
+python -m venv .venv-core
+.\.venv-core\Scripts\python.exe -m pip install "git+https://github.com/meuPia/core.git@v1.4.1"
+$env:MEUPIA_COMANDO = "$PWD\.venv-core\Scripts\meupia.exe"
+$env:MEUPIA_PYTHON  = "$PWD\.venv-core\Scripts\python.exe"
+npm run test:core-real
+npm run test:acceptance
+```
+
+A referência remota foi conferida com
+`git ls-remote --tags https://github.com/meuPia/core.git "refs/tags/v1.4.1*"`:
+o objeto da tag anotada é `b6a8fc8963629af441267388c2ce218e18b5d877` e o commit
+apontado (`refs/tags/v1.4.1^{}`) é `68824d7f9e91f71670f3f466c0a5865a8685f020`,
+idêntico ao `direct_url.json` do pacote `meupia-core==1.4.1` instalado.
 
 ## 💡 Por que o meuPiá Blocos?
 Muitos iniciantes travam antes mesmo de escrever a primeira linha de Portugol.

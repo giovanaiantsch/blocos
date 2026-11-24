@@ -16,9 +16,13 @@ léxica, sintática e semântica e gera um arquivo Python em `output/`; a execu�
 ocorre com `python output/<nome>.py` (ver [research.md](./research.md)).
 Nenhum código do Core ou de módulos é alterado (RT-02).
 
-A tag congelada da turma permanece **pendente de confirmação** (RT-01/Q-01).
-O plano define o formato do adaptador, mas não fixa versão, assinatura nem
-conjunto definitivo de tipos/operadores até essa confirmação.
+A tag original da turma **não pôde ser confirmada** (RT-01/Q-01). Como
+substituto, a dupla fixou **`meuPia/core v1.4.1`**, commit
+**`68824d7f9e91f71670f3f466c0a5865a8685f020`** (tag anotada conferida por
+`git ls-remote --tags https://github.com/meuPia/core.git`:
+`refs/tags/v1.4.1^{}`; objeto da tag `b6a8fc8963629af441267388c2ce218e18b5d877`).
+O adaptador usa somente as interfaces públicas dessa versão e a configuração
+fica centralizada em `src/core/configuracao.js`.
 
 ## Contexto técnico
 
@@ -54,22 +58,24 @@ sobre gerador, adaptador e persistência, com relatório versionado em
 aberto por vez. `EC-01`, `EC-02` e `BX-01` ficam fora.
 
 **Esclarecimentos**: nenhum marcador `NEEDS CLARIFICATION` permanece. A tag
-congelada é uma dependência externa conhecida, registrada como pendente, não
-uma dúvida de escopo a resolver nesta spec.
+original da turma não pôde ser confirmada; a versão substituta fixada pela
+dupla (`v1.4.1` @ `68824d7f9e91f71670f3f466c0a5865a8685f020`) é registrada como
+dependência externa conhecida, não como dúvida de escopo.
 
-### Verificações dependentes da tag congelada
+### Verificações na versão fixada
 
-- Fixar a versão do Core (e de módulos, se usados) no manifesto do projeto e
-  no ambiente de teste de aceitação.
-- Confirmar que o comando `meupia <arquivo.por>` e a saída
-  `[COMPILED SUCCESSFULLY]` / `[COMPILATION ERROR]` se mantêm na tag da turma.
-- Confirmar a gramática efetivamente aceita: `var`, tipos, `leia`, `escreva`,
-  `se/senao`, `enquanto`, `para` e operadores (usar o Guia da Linguagem da tag).
-- Confirmar o formato do arquivo Python gerado e o nome em `output/<nome>.py`.
-- Confirmar que `leia` consome linhas da entrada padrão na ordem esperada.
-- Confirmar quais erros de execução continuam em inglês e quais já vêm em
-  pt-BR, para calibrar o catálogo de mensagens do editor.
-- Confirmar a licença e a versão do Blockly na etapa de implementação.
+| Verificação | Evidência em 2026-11-23 |
+| --- | --- |
+| Versão fixada no manifesto e no ambiente de aceitação | `src/core/configuracao.js` (tag + hash) e `.venv-core` com `meupia-core==1.4.1` (ignorado pelo git) |
+| Comando `meupia <arquivo.por>` e prefixos `[COMPILED SUCCESSFULLY]` / `[COMPILATION ERROR]` | Confirmados na saída real da CLI; o runner só devolve `sucesso` com o prefixo de sucesso |
+| Gramática `var`, `leia`, `escreva` e `atribuir` com `<-` | Aceita pelo parser real em `dobrar-entrada.json`; `se/senao`, `enquanto`, `para` e operadores seguem sintaxe provisória (D-04), ainda pendente de confirmação documental |
+| Arquivo Python gerado em `output/<nome>.py` | Confirmado: `✅ Code generated successfully at output\programa.py` |
+| `leia` consome stdin na ordem esperada | Entrada `3` gerou saída `6` (teste real, sem mock) |
+| Idioma dos erros de runtime | Parcial: erro de CLI observado em pt-BR ("Arquivo ... não encontrado."); catálogo de mensagens do Core permanece pendente (T019) |
+| Licença e versão do Blockly | `blockly@12.5.1`, Apache-2.0 (D-01) |
+
+Comando de reprodução do aceite real: ver `README.md` e
+`docs/verificacao-final.md`. Nenhum mock é usado em `tests/acceptance/`.
 
 ## Verificação da constitution
 
@@ -83,7 +89,7 @@ uma dúvida de escopo a resolver nesta spec.
 | IV. Aceitação com Core real e cobertura ≥80% | PASSA | Testes a partir de JSON, parser e execução reais; Vitest com `coverage/` versionado. |
 | V. pt-BR e experiência do estudante | PASSA | Três painéis, atualização automática e catálogo único de mensagens em pt-BR. |
 | Stack inicial Blockly + JavaScript | PASSA | Registrada no Contexto técnico e em research.md. |
-| Tag congelada pendente | PASSA | Pendência explícita, com verificações dependentes listadas acima. |
+| Versão do Core fixada | PASSA | `meuPia/core v1.4.1` @ `68824d7f9e91f71670f3f466c0a5865a8685f020`; tag original da turma não confirmada, registrada como ressalva. |
 
 Reavaliação após a Fase 1: nenhuma violação introduzida pelos contratos, pelo
 modelo de dados ou pelo guia de validação.
@@ -164,7 +170,7 @@ justificativas adicionais.
 | RF-22 | spec sem detalhes técnicos; plan com arquitetura/stack/dados/integração |
 | RF-23 | stack registrada na constitution e detalhada aqui |
 | RF-24 | demo de até 10 min sem código nos slides |
-| RT-01 | tag pendente; verificações dependentes listadas acima |
+| RT-01 | versão fixada `v1.4.1` @ `68824d7f...`; verificações registradas acima |
 | RT-02 | Core intocado; contrato `core-runner.md` |
 | RT-03 | adaptador local + issue no módulo se faltar interface |
 | RT-04 | pt-BR obrigatório; `src/messages` |

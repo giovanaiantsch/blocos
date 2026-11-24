@@ -7,8 +7,10 @@
 ## Visão geral
 
 O modelo descreve apenas dados observáveis pelo estudante ou necessários aos
-contratos entre editor, gerador e runner. Tipos e operadores exatos dependem da
-tag congelada confirmada (RT-01).
+contratos entre editor, gerador e runner. A versão do Core está fixada em
+`meuPia/core v1.4.1` (commit `68824d7f9e91f71670f3f466c0a5865a8685f020`, D-06);
+a tag original da turma não pôde ser confirmada. Tipos e operadores exatos
+continuam pendentes de confirmação documental em T026/T007 (RT-01).
 
 ## Entidades
 

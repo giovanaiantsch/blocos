@@ -9,8 +9,10 @@ Added sections:
   - Governance
 Removed sections: nenhuma
 Follow-up TODOs:
-  - TODO(TAG_CONGELADA_TURMA): tag congelada do Core e módulos pendente de
-    confirmação (Q-01 em docs/requisitos.md).
+  - Versão do Core fixada pela dupla: `meuPia/core v1.4.1`, commit
+    `68824d7f9e91f71670f3f466c0a5865a8685f020` (Q-01 em docs/requisitos.md).
+    A tag original da turma não pôde ser confirmada; esta é a versão substituta
+    adotada para a integração e o aceite.
   - Versão/licença do Blockly, ferramenta e diretório do relatório de cobertura,
     convenção exata de commit e regra de comparação da saída a definir no plan.
 -->
@@ -34,7 +36,8 @@ diluir esforço em módulos, missões ou conversão reversa ainda não validados
 ### II. Ecossistema intocado e interfaces públicas
 
 Toda comunicação com o meuPiá Core e seus módulos DEVE ocorrer exclusivamente
-por interfaces públicas da tag congelada confirmada. O código do Core e dos
+pelas interfaces públicas da versão fixada (`meuPia/core v1.4.1`, commit
+`68824d7f9e91f71670f3f466c0a5865a8685f020`). O código do Core e dos
 módulos NÃO DEVE ser modificado, copiado para este repositório nem substituído
 por reimplementação local. Se faltar uma interface pública necessária, a equipe
 DEVE abrir issue no repositório do módulo e resolver a integração com um
@@ -105,13 +108,18 @@ A serialização DEVE usar um envelope JSON versionado com `versao`, `titulo` e
 os dados dos blocos. A validação do JSON carregado DEVE ocorrer antes de
 substituir o programa aberto. Tipos de variáveis, operadores aceitos e o
 contrato de entrada/saída do parser DEVEM ser fixados no `plan` a partir da
-documentação da tag confirmada.
+documentação da versão fixada.
 
-TODO(TAG_CONGELADA_TURMA): a tag congelada da turma para o meuPiá Core e módulos
-ainda NÃO foi confirmada (Q-01 em `docs/requisitos.md`). Nenhuma versão DEVE ser
-fixada, nenhuma API específica DEVE ser documentada como definitiva e o teste de
-aceitação NÃO DEVE ser escrito contra uma tag presuntiva até a confirmação pela
-dupla/professor.
+**Versão fixada (substituta):** a tag original da turma para o meuPiá Core e
+módulos **não pôde ser confirmada** (Q-01 em `docs/requisitos.md`). A dupla
+fixou `meuPia/core v1.4.1`, commit
+`68824d7f9e91f71670f3f466c0a5865a8685f020`, conferido em
+`https://github.com/meuPia/core.git` (`refs/tags/v1.4.1^{}`; objeto da tag
+anotada `b6a8fc8963629af441267388c2ce218e18b5d877`). Essa versão — e somente
+ela — é a referência para a interface pública, o ambiente de aceitação e o
+registro de hash nesta constitution, no `plan` e no `README.md`. O aceite real
+com `dobrar-entrada.json` (entrada `3` → saída `6`) está registrado em
+`docs/verificacao-final.md`.
 
 A versão e a licença do Blockly, a ferramenta e o diretório do relatório de
 cobertura, a convenção exata de mensagem de commit e a regra de comparação da

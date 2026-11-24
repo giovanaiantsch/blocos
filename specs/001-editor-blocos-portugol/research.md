@@ -5,7 +5,9 @@
 **Data**: 2026-11-23
 
 **Situação**: Fase 0 concluído. Não restam marcadores `NEEDS CLARIFICATION`; a
-tag congelada da turma é uma dependência externa mantida como pendente.
+tag original da turma não pôde ser confirmada e a dupla fixou a versão
+substituta `meuPia/core v1.4.1` @ `68824d7f9e91f71670f3f466c0a5865a8685f020`,
+conferida remotamente e registrada em `docs/decisoes.md` (D-06).
 
 ## Tarefas de pesquisa
 
@@ -92,7 +94,7 @@ tag congelada da turma é uma dependência externa mantida como pendente.
   descartado por RT-02.
 - **Incompatibilidade**: nenhuma contradição com a interface pública — o limite
   é responsabilidade do adaptador, não do Core. É uma lacuna da interface,
-  registrada como pendência de confirmação na tag da turma.
+  confirmada na versão fixada `v1.4.1` (o Core não documenta timeout).
 
 ### R5 — Comparação da saída
 
@@ -123,17 +125,24 @@ tag congelada da turma é uma dependência externa mantida como pendente.
   ignorar esse diretório. O topo do `README.md` é atualizado com os valores
   reais do resumo a cada entrega (RF-20).
 
-### R7 — Tag congelada da turma
+### R7 — Versão do Core (substituta da tag da turma)
 
-- **Decisão**: manter a tag como pendente (Q-01/RT-01). Nenhuma versão é
-  fixada neste plano; o manifesto e o ambiente de aceitação devem receber a
-  tag confirmada pela dupla/professor antes da implementação.
+- **Decisão**: a tag original da turma (Q-01/RT-01) não pôde ser confirmada. A
+  dupla fixou `meuPia/core v1.4.1`, commit
+  `68824d7f9e91f71670f3f466c0a5865a8685f020`, como versão substituta para o
+  manifesto, o adaptador e o ambiente de aceitação. Ela não é apresentada como
+  a tag original da turma.
+- **Evidência**: `git ls-remote --tags https://github.com/meuPia/core.git
+  "refs/tags/v1.4.1*"` retorna `b6a8fc8963629af441267388c2ce218e18b5d877`
+  (objeto da tag anotada) e `68824d7f9e91f71670f3f466c0a5865a8685f020`
+  (`refs/tags/v1.4.1^{}`). O `direct_url.json` do pacote instalado
+  (`meupia-core==1.4.1`) aponta para o mesmo commit.
 - **Justificativa**: a tag não aparece nos arquivos oficiais consultados
-  (`README.md` e `CONTRIBUTING.md` deste fork). O PyPI mostra `1.4.1` como
-  versão mais recente observada em 2026-11-23, mas isso não equivale à tag
-  congelada da turma.
-- **Alternativas consideradas**: adotar `1.4.1` por padrão foi descartado para
-  não transformar suposição em decisão de governança.
+  (`README.md` e `CONTRIBUTING.md` deste fork). A dupla explicitamente assumiu
+  a versão `1.4.1` em 2026-11-23, o que a torna uma decisão registrada, não uma
+  suposição.
+- **Resultado**: o aceite real com `dobrar-entrada.json` (entrada `3` → saída
+  `6`) passou nessa versão; ver `docs/verificacao-final.md` e D-06.
 
 ## Incompatibilidades das propostas da PoC com a interface pública
 
@@ -141,15 +150,18 @@ tag congelada da turma é uma dependência externa mantida como pendente.
 | --- | --- | --- |
 | Entrada do `leia` fornecida antes da execução | Compatível no comportamento | Não há API documentada de injeção; o runner entrega linhas via stdin do processo gerado. |
 | Erros no painel de saída sem apagar o projeto | Parcialmente compatível | Erros de compilação já vêm em pt-BR; erros de runtime podem vir em inglês e exigem catálogo no adaptador + issue no Core. |
-| Limite de tempo para execução | Lacuna da interface | O Core não documenta timeout; o runner cancela o processo. Confirmar na tag. |
+| Limite de tempo para execução | Lacuna da interface | Confirmado em `v1.4.1`: o Core não documenta timeout; o runner aplica o limite de 5 s. |
 | Comparação normalizando só quebras de linha Windows/Linux | Compatível | Aplicar normalização apenas no comparador do teste, não na exibição ao usuário. |
 | Chamada ao parser e à execução por interface pública | Compatível | Usar `meupia <arquivo.por>` e `python output/<nome>.py`; não importar módulos internos. |
 
 ## Pendências
 
-- Confirmação da tag congelada e das verificações listadas em
-  [plan.md](./plan.md#verificações-dependentes-da-tag-congelada).
-- Confirmação da versão/licença do Blockly e do diretório de relatório de
-  cobertura no ambiente da turma (o plano propõe `coverage/`).
+- Confirmação da tag **original** da turma (Q-01) — substituída, para fins de
+  integração, pela versão fixada em D-06. As verificações já executadas nela
+  estão em [plan.md](./plan.md#verificações-na-versão-fixada) e em
+  `docs/verificacao-final.md`.
+- Confirmação documental de tipos/operadores na versão fixada (T026/T007).
+- Versão/licença do Blockly e diretório de cobertura já registrados em D-01
+  (`blockly@12.5.1`, Apache-2.0, `coverage/`).
 - Regra definitiva de mensagens de erro de runtime traduzidas versus exibidas
   conforme recebidas do Core.

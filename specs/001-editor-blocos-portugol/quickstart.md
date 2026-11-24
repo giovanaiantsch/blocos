@@ -122,9 +122,14 @@ encaixar blocos do dobro da entrada → mostrar o Portugol atualizando → infor
 `3` → executar no Core real → mostrar `6` → salvar e reabrir o JSON → mostrar
 a recusa de um arquivo inválido sem perder o programa.
 
-## Pendências antes da implementação
+## Versão do Core e pendências
 
-- Confirmar a tag congelada e executar todas as verificações de
-  [plan.md](./plan.md#verificações-dependentes-da-tag-congelada).
-- Confirmar versão e licença do Blockly.
-- Confirmar se o ambiente da turma aceita o diretório `coverage/` versionado.
+- A tag original da turma não pôde ser confirmada; a dupla fixou
+  `meuPia/core v1.4.1` @ `68824d7f9e91f71670f3f466c0a5865a8685f020`. O aceite
+  real (`3` → `6`) passou nessa versão; veja as verificações em
+  [plan.md](./plan.md#verificações-na-versão-fixada) e o comando de reprodução
+  no `README.md`.
+- Blockly `12.5.1`, Apache-2.0 (D-01) — confirmado.
+- `coverage/` versionado — confirmado no repositório.
+- Ainda pendente: confirmação documental de tipos/operadores (T026/T007) e das
+  mensagens de runtime (T019).

@@ -8,9 +8,10 @@
 
 | Comando | Resultado |
 | --- | --- |
-| `npm test` | 17 arquivos, **66 testes**, 0 falhas |
-| `npm run coverage` | **93,25% linhas**, **93,25% declarações**, **81,81% desvios**, **94,11% funções** |
-| `npm run test:acceptance` | **não executado com sucesso**: depende do Core real e da tag (T006/T007) |
+| `npm test` | 18 arquivos, **67 testes**, 0 falhas com o Core configurado (sem ele: 66 passam e 1 aceite é `skipped`) |
+| `npm run coverage` | **93,69% linhas**, **93,69% declarações**, **80,58% desvios**, **94,28% funções** |
+| `npm run test:acceptance` | **1 arquivo, 1 teste, 0 falhas** com o Core real `v1.4.1` |
+| `npm run test:core-real` | **ACEITE REAL: OK (entrada 3 -> saída 6)** |
 
 Fonte: `coverage/coverage-summary.json`, regenerado na revisão final.
 
@@ -23,7 +24,8 @@ unitários de integração e pela verificação no navegador descrita abaixo.
 
 | Arquivo do núcleo | Linhas | Desvios |
 | --- | --- | --- |
-| `src/core/runner.js` | 95,27% | 75,86% |
+| `src/core/configuracao.js` | 100% | 25,00% |
+| `src/core/runner.js` | 94,95% | 76,66% |
 | `src/generation/gerador.js` | 95,61% | 82,50% |
 | `src/generation/operadores.js` | 97,95% | 90,00% |
 | `src/generation/sintaxe.js` | 100% | 100% |
@@ -63,31 +65,48 @@ Observações:
   tela; nenhuma exceção ou erro de console registrado no navegador.
 - Smoke final sem instrumentação: `temHookDeDebug: false`.
 
-## Tentativa de execução no Core real
+## Execução real no Core fixado
 
-O botão **Executar** foi ligado ao adaptador real por `/api/executar`
-(`vite.config.js`, D-05). Com o projeto canônico `3 → 6` carregado:
+A tag original da turma **não pôde ser confirmada** (Q-01). A dupla fixou
+`meuPia/core v1.4.1`, commit
+`68824d7f9e91f71670f3f466c0a5865a8685f020`, conferido por
+`git ls-remote --tags https://github.com/meuPia/core.git "refs/tags/v1.4.1*"`
+(`refs/tags/v1.4.1^{}` aponta para esse commit; o objeto da tag anotada é
+`b6a8fc8963629af441267388c2ce218e18b5d877`). O hash completo está registrado na
+constitution, no `plan.md`, no `README.md`, em `docs/decisoes.md` (D-06) e em
+`src/core/configuracao.js`.
+
+O botão **Executar** usa a ponte `/api/executar` (`vite.config.js`) e o runner
+com a configuração fixada, sempre pelas interfaces públicas. Com
+`tests/fixtures/dobrar-entrada.json`:
 
 - Portugol gerado: `leia(x)`, `x <- x * 2`, `escreva(x)`, entrada `3`.
-- Resultado observado na saída: `Erro na compilação: spawnSync meupia ENOENT`.
+- Compilação: `[COMPILED SUCCESSFULLY]`; Python gerado em `output\programa.py`.
+- Resultado medido:
+  `{"status":"sucesso","saida":"6\r\n","erro":"","duracaoMs":343,"interrompidoPorLimite":false}`.
+- `npm run test:acceptance` (teste real, **sem mock**): 1 teste, 0 falhas.
 
-O comando `meupia` não está instalado nesta máquina e a tag congelada da turma
-(Q-01/T006) não foi confirmada. Logo:
+Antes de instalar o Core fixado, a mesma tentativa no navegador produziu
+`Erro na compilação: spawnSync meupia ENOENT`; esse erro preciso registrou a
+ausência da CLI e motiva a versão fixada.
 
-- **A saída `6` não foi validada com o Core real.** Nenhum mock foi usado em
-  `tests/acceptance/`.
-- Aceite oficial de T017/T036 permanece pendente.
-- Traduções definitivas de mensagens do Core (T019) dependem de T007.
-- Sintaxe dos novos blocos é provisória (D-04); comandos e prefixos do runner
-  são provisórios (D-02).
+Comando para reproduzir (Windows/PowerShell, na raiz do repositório):
 
-## Pendências externas
+```powershell
+python -m venv .venv-core
+.\.venv-core\Scripts\python.exe -m pip install "git+https://github.com/meuPia/core.git@v1.4.1"
+$env:MEUPIA_COMANDO = "$PWD\.venv-core\Scripts\meupia.exe"
+$env:MEUPIA_PYTHON  = "$PWD\.venv-core\Scripts\python.exe"
+npm run test:core-real
+npm run test:acceptance
+```
 
-1. Confirmar a tag exata da turma e registrá-la em `docs/decisoes.md` (T006).
-2. Repetir as verificações de `plan.md` na tag confirmada (T007).
-3. Instalar o Core e rodar `npm run test:acceptance` para validar `3 → 6`
-   (T017/T036).
-4. Fechar T040/T041 e revisar este documento sem pendências (T042).
+Ainda pendente, mesmo com a versão fixada:
+
+- Confirmação documental de tipos e operadores (T026/T007) — a sintaxe de
+  `se/senão`, `enquanto`, `para` e operadores continua provisória (D-04).
+- Traduções definitivas das mensagens do Core (T019).
+- Aceite de reabertura com execução real (T036) e fechamento de T040/T042.
 
 ## Publicação da branch
 

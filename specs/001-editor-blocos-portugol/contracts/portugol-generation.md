@@ -44,9 +44,10 @@ Regras de ligação:
 
 ## Mapeamento conceitual dos blocos
 
-A sintaxe abaixo é **ilustrativa** até a confirmação da tag congelada (RT-01).
-O gerador deve ser isolado em uma tabela de formatação para que apenas essa
-tabela seja ajustada após a verificação da gramática real.
+A sintaxe abaixo é **provisória** até a confirmação documental em T026/T007 na
+versão fixada `meuPia/core v1.4.1` (tag original da turma não confirmada,
+RT-01/D-06). O gerador fica isolado em `src/generation/sintaxe.js` e
+`src/generation/operadores.js` para que apenas essas tabelas sejam ajustadas.
 
 | Bloco (`tipo`) | Campos usados | Saída conceitual | Requisito |
 | --- | --- | --- | --- |
@@ -100,14 +101,16 @@ Sequência observável esperada:
 4. Capturar `6` no painel "Saída da execução"; comparação com `6\n` após
    normalizar apenas CRLF/LF.
 
-## Verificações dependentes da tag congelada
+## Verificações na versão fixada
 
-- Palavras-chave e pontuação exatas de `var`, `leia`, `escreva`, `se`,
-  `senao`, `enquanto` e `para`.
-- Tipos de variáveis e operadores aritméticos, relacionais e lógicos aceitos.
-- Necessidade de declaração prévia e regras de escopo.
-- Formato da mensagem de erro usado quando uma expressão fica incompleta.
-- Codificação e quebras de linha na saída do `escreva`.
+- ✅ Palavras-chave e pontuação de `var`, `leia`, `escreva` e `<-` confirmadas
+  pelo aceite real em `v1.4.1`.
+- ⏳ `se/senao`, `enquanto`, `para`, tipos e operadores: sintaxe provisória
+  (D-04), pendente de confirmação documental em T026/T007.
+- ⏳ Declaração prévia/escopo e formato da mensagem de expressão incompleta:
+  pendentes de T026/T007.
+- ✅ Codificação e quebras de linha: saída `6\r\n` no Windows (normalização
+  CRLF/LF no teste).
 
 ## Rastreabilidade
 

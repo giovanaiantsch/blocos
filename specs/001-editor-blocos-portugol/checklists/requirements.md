@@ -33,9 +33,11 @@
 
 - Validação concluída em 2026-11-23. A spec usa apenas comportamento observável:
   JSON como artefato de projeto, painéis, Portugol gerado, saída e mensagens.
-- A tag congelada da turma está registrada como pendente em `Premissas` e na
-  matriz de rastreabilidade (RT-01), sem marcador `[NEEDS CLARIFICATION]`, pois é
-  uma dependência externa conhecida, não uma decisão de escopo em aberto.
+- A tag original da turma não pôde ser confirmada; a versão substituta fixada
+  pela dupla (`meuPia/core v1.4.1` @ `68824d7f9e91f71670f3f466c0a5865a8685f020`)
+  está registrada em `Premissas` e na matriz de rastreabilidade (RT-01), sem
+  marcador `[NEEDS CLARIFICATION]`, pois é uma dependência externa conhecida,
+  não uma decisão de escopo em aberto.
 - As dúvidas de comportamento Q-02/Q-04, Q-05, Q-06, Q-12 e Q-13 estão
   registradas ao final de `Assumptions` com premissas provisórias, permitindo
   seguir para o planejamento sem bloqueio.

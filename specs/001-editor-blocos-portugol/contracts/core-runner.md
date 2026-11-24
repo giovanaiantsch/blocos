@@ -14,9 +14,10 @@ Fonte: README oficial, Guia da Linguagem e `setup.py` do repositório
 | Compilação/validação | `meupia <arquivo.por>` | Executa análise léxica, sintática e semântica; gera `output/<nome>.py`. |
 | Execução | `python output/<nome>.py` | Executa o programa; `leia` consome uma linha da entrada padrão por chamada. |
 
-O entry point publicado é `meupia=meuPia.compiler:main`. O código publicado
-usa os prefixos `[COMPILED SUCCESSFULLY]` e `[COMPILATION ERROR]:`; esses
-textos são sinais observáveis, mas precisam ser confirmados na tag da turma.
+O entry point publicado é `meupia=meuPia.compiler:main`. Na versão fixada
+`meuPia/core v1.4.1` (commit `68824d7f9e91f71670f3f466c0a5865a8685f020`), os
+prefixos `[COMPILED SUCCESSFULLY]` e `[COMPILATION ERROR]:` foram confirmados
+pela execução real (D-06). A tag original da turma não pôde ser confirmada.
 Não usar módulos internos do compilador: eles não são interface pública
 documentada.
 
@@ -67,11 +68,17 @@ Este é um contrato **interno do editor**, não uma alteração do Core.
 8. Comparação com esperado "6\n": igual após normalização CRLF/LF
 ```
 
-## Verificações dependentes da tag congelada
+## Verificações na versão fixada
 
-- Confirmar que o comando e os prefixos de sucesso/erro se mantêm.
-- Confirmar o diretório e o padrão de nome do arquivo Python gerado.
-- Confirmar a sintaxe de `var`, `leia`, `escreva`, `se/senao`, `enquanto`,
-  `para` e dos operadores aceitos.
-- Confirmar codificação de caracteres e quebras de linha na saída.
-- Confirmar quais erros de runtime ainda são exibidos em inglês.
+- ✅ Comando `meupia <arquivo.por>` e prefixos `[COMPILED SUCCESSFULLY]` /
+  `[COMPILATION ERROR]:` confirmados em `v1.4.1`.
+- ✅ Diretório e nome do arquivo gerado confirmados: `output/programa.py`.
+- ⏳ Sintaxe de `var`, `leia`, `escreva` e `atribuir` confirmada pelo aceite real;
+  `se/senao`, `enquanto`, `para` e operadores seguem provisórios (D-04) até a
+  confirmação documental em T026/T007.
+- ✅ Codificação e quebras de linha: saída `6\r\n` no Windows; o teste normaliza
+  apenas CRLF/LF.
+- ⏳ Idioma dos erros de runtime: erro de CLI observado em pt-BR; catálogo
+  completo depende de T019.
+
+Evidências em `docs/verificacao-final.md` e `docs/decisoes.md` (D-06).

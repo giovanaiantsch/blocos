@@ -87,8 +87,10 @@ real, e não apenas bonito na tela.
 ```
 
 Saída esperada no painel "Saída da execução": `6`.
-O Portugol correspondente é aceito pelo parser real do Core; a sintaxe exata é
-ilustrativa e será fixada quando a tag congelada da turma for confirmada.
+O Portugol correspondente foi aceito pelo parser real do Core fixado (`v1.4.1`
+@ `68824d7f9e91f71670f3f466c0a5865a8685f020`) em 2026-11-23. A sintaxe dos
+blocos de decisão e laços permanece provisória (D-04) até a confirmação
+documental em T026/T007.
 
 **Cenários de aceitação**:
 
@@ -369,10 +371,13 @@ uma sessão nova e executar novamente com entrada `3`, conferindo a saída `6`.
 
 - O público é formado por estudantes iniciantes em programação, usando um
   navegador em um computador com tela suficiente para os três painéis.
-- A tag congelada da turma para o meuPiá Core e módulos permanece **pendente de
-  confirmação** (Q-01 em `docs/requisitos.md`, `TODO(TAG_CONGELADA_TURMA)` na
-  constitution). Até a confirmação, nenhuma versão, assinatura de interface ou
-  conjunto definitivo de tipos e operadores é fixado nesta spec.
+- A tag original da turma para o meuPiá Core e módulos **não pôde ser
+  confirmada** (Q-01 em `docs/requisitos.md`). A dupla fixou, como substituto,
+  `meuPia/core v1.4.1`, commit
+  `68824d7f9e91f71670f3f466c0a5865a8685f020` (registrado na constitution, no
+  `plan.md` e no `README.md`). A versão e as interfaces públicas estão fixadas;
+  o conjunto definitivo de tipos e operadores ainda depende da confirmação
+  documental em T026/T007.
 - Tipos de variáveis, operadores aceitos e sintaxe exata do Portugol serão
   confirmados a partir da documentação da tag congelada; os exemplos usam apenas
   número inteiro e multiplicação por coerência com o pedido da PoC.

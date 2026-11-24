@@ -20,33 +20,38 @@ e a meta de Node.
 ## D-02 — Adaptador do Core independente da versão (T012)
 
 O contrato em `plan.md` descreve o *formato* do adaptador (arquivo `.por`
-temporário, comando público, stdin, limite de 5 s e `ResultadoDaExecucao`) sem
-fixar a versão do Core. Assim, a estrutura do runner pode ser implementada e
-testada agora com a CLI **injetada como dependência**; apenas os valores
-provisórios de comando, prefixos e mensagens dependem de T007.
+temporário, comando público, stdin, limite de 5 s e `ResultadoDaExecucao`). A
+estrutura do runner mantém a CLI **injetada como dependência**, o que permite o
+teste unitário sem Python; os valores de comando, prefixos e mensagens foram
+confirmados na versão fixada (D-06).
 
-- Comandos provisórios: `meupia <arquivo.por>` e `python output/<nome>.py`.
+- Comandos confirmados: `meupia <arquivo.por>` e `python output/<nome>.py`.
+- Prefixos confirmados: `[COMPILED SUCCESSFULLY]` e `[COMPILATION ERROR]:`.
 - Nenhum módulo interno do Core é importado (RT-02).
-- O teste unitário usa CLI simulada; o aceite com o Core real (T017) continua
-  pendente até T006/T007.
+- O teste unitário usa CLI simulada **somente fora de `tests/acceptance/`**; o
+  aceite real (T017) passou com o Core `v1.4.1` (D-06).
 
 ## D-03 — Execução indisponível na interface
 
-Enquanto a tag não for confirmada, o botão "Executar" não finge sucesso: o
-painel "Saída da execução" exibe, em pt-BR,
+Enquanto a tag original não era confirmada, o botão "Executar" não fingia
+sucesso: o painel "Saída da execução" exibia, em pt-BR,
 "Execução indisponível: tag do Core ainda não confirmada.", e o projeto aberto
-permanece intacto.
+permanecia intacto.
 
 > Atualização de 2026-11-23: com a ponte local de D-05 o botão passou a tentar
-> a CLI real. Se a tag/core ainda não estiver confirmado — ou o comando não
-> existir na máquina — a saída mostra o erro preciso do processo, sem simular
-> sucesso. A mensagem original de D-03 continua reservada como fallback.
+> a CLI real. Sem o Core fixado instalado, a saída mostrava
+> `Erro na compilação: spawnSync meupia ENOENT`, sem simular sucesso. Após a
+> instalação da versão de D-06, o botão executa o Core real e a saída é a do
+> processo. A mensagem original continua reservada como fallback.
 
 ## D-04 — Sintaxe provisória dos novos blocos (T026/T028/T030/T032)
 
-A tag da turma (Q-01) continua pendente, então a implementação de operadores,
-`se/senão`, `enquanto` e `para` usa a **mesma tabela provisória** já adotada em
-`src/generation/sintaxe.js`, extraída do Guia da Linguagem público do Core:
+A tag original da turma (Q-01) não pôde ser confirmada. A versão substituta
+`v1.4.1` (D-06) está fixada, mas a **confirmação documental** de tipos e
+operadores em T026/T007 ainda está pendente; por isso a implementação de
+operadores, `se/senão`, `enquanto` e `para` continua usando a **mesma tabela
+provisória** já adotada em `src/generation/sintaxe.js`, extraída do Guia da
+Linguagem público do Core:
 
 | Recurso | Forma provisória gerada |
 | --- | --- |
@@ -66,14 +71,67 @@ ser corrigida primeiro em `sintaxe.js`/`operadores.js`, antes do aceite oficial.
 O navegador não pode chamar `meupia`/`python` diretamente. `vite.config.js`
 registra o middleware `/api/executar`, que recebe o `ProjetoJSON`, gera o
 Portugol com o gerador puro e repassa ao adaptador de `src/core/runner.js`.
-Nada é mockado: a ponte usa a CLI configurada em `CONFIGURACAO_PROVISORIA`.
+Nada é mockado: a ponte usa a configuração centralizada em
+`src/core/configuracao.js` e a CLI apontada por `MEUPIA_COMANDO`/`MEUPIA_PYTHON`.
 
-Execução real tentada em 2026-11-23 no navegador (`http://127.0.0.1:5200/`):
+Execução real tentada em 2026-11-23 no navegador (`http://127.0.0.1:5200/`),
+**antes** de instalar o Core fixado:
 
 - Projeto canônico `3 → 6` carregado; Portugol gerado com `leia(x)`,
   `x <- x * 2` e `escreva(x)`; entrada `3`.
 - Saída obtida: `Erro na compilação: spawnSync meupia ENOENT`.
 
-`meupia` não está instalado nesta máquina e a tag da turma não foi confirmada;
-portanto T017/T036 continuam pendentes. Nenhum mock foi criado em
+Depois de instalar a versão de D-06, o mesmo projeto foi executado pelo
+adaptador real com saída `6\r\n` (ver D-06). Nenhum mock foi criado em
 `tests/acceptance/`.
+
+## D-06 — Versão substituta do Core e aceite real (T006/T007/T013/T017)
+
+A tag original da turma **não pôde ser confirmada** (Q-01). A dupla fixou
+`meuPia/core v1.4.1` como versão substituta:
+
+| Campo | Valor |
+| --- | --- |
+| Repositório | `https://github.com/meuPia/core.git` |
+| Tag | `v1.4.1` (anotada) |
+| Objeto da tag | `b6a8fc8963629af441267388c2ce218e18b5d877` |
+| **Commit (`refs/tags/v1.4.1^{}`)** | **`68824d7f9e91f71670f3f466c0a5865a8685f020`** |
+| Pacote instalado | `meupia-core==1.4.1` |
+| Conferência local | `direct_url.json` do venv aponta para o mesmo commit |
+
+Comando de conferência da referência remota:
+
+```bash
+git ls-remote --tags https://github.com/meuPia/core.git "refs/tags/v1.4.1*"
+# b6a8fc8963629af441267388c2ce218e18b5d877  refs/tags/v1.4.1
+# 68824d7f9e91f71670f3f466c0a5865a8685f020  refs/tags/v1.4.1^{}
+```
+
+A configuração do editor fica em `src/core/configuracao.js`: comandos públicos
+`meupia <arquivo.por>` e `python output/<nome>.py`, prefixos
+`[COMPILED SUCCESSFULLY]` / `[COMPILATION ERROR]:`, diretório `output`, limite
+de 5 s, e as variáveis opcionais `MEUPIA_COMANDO`/`MEUPIA_PYTHON` para apontar
+ao ambiente que instalou exatamente essa tag. `vite.config.js` e o runner
+consomem essa mesma configuração.
+
+Resultado medido em 2026-11-23 com `tests/fixtures/dobrar-entrada.json`
+(entrada `3`; Portugol com `leia(x)`, `x <- x * 2`, `escreva(x)`):
+
+```json
+{"status":"sucesso","saida":"6\r\n","erro":"","duracaoMs":343,"interrompidoPorLimite":false}
+```
+
+Comando para reproduzir (Windows/PowerShell, na raiz do repositório):
+
+```powershell
+python -m venv .venv-core
+.\.venv-core\Scripts\python.exe -m pip install "git+https://github.com/meuPia/core.git@v1.4.1"
+$env:MEUPIA_COMANDO = "$PWD\.venv-core\Scripts\meupia.exe"
+$env:MEUPIA_PYTHON  = "$PWD\.venv-core\Scripts\python.exe"
+npm run test:core-real
+npm run test:acceptance
+```
+
+`npm run test:core-real` imprime o Portugol gerado, o `ResultadoDaExecucao` e a
+linha `ACEITE REAL: OK (entrada 3 -> saída 6)`. O teste em
+`tests/acceptance/dobrar-entrada.test.js` usa o Core real, sem mock.

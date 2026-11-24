@@ -63,7 +63,7 @@ Prioridade esta entrega: **escopo mínimo**. Escopo completo e bônus ficam regi
 
 ## 3. Restrições
 
-- **RT-01 — Tag congelada.** Usar apenas interfaces públicas do meuPiá na tag congelada para a turma. ⚠️ **Tag pendente de confirmação** (não informada nos arquivos oficiais consultados); ver Q-01.
+- **RT-01 — Tag congelada.** Usar apenas interfaces públicas do meuPiá na versão fixada. ⚠️ A tag original da turma **não pôde ser confirmada** (não informada nos arquivos oficiais consultados); a dupla fixou `meuPia/core v1.4.1`, commit `68824d7f9e91f71670f3f466c0a5865a8685f020`, como substituta; ver Q-01 e `docs/decisoes.md` (D-06).
 - **RT-02 — Ecossistema intocado.** Não modificar o meuPiá Core nem seus módulos. Mudanças no compilador pertencem ao repositório do Core.
 - **RT-03 — Interface ausente.** Se faltar uma interface pública necessária, registrar a necessidade abrindo uma issue no repositório do módulo correspondente e resolver a integração com um **adaptador no editor**, sem alterar o módulo.
 - **RT-04 — Idioma único.** Toda interface, documentação e mensagem ao usuário em pt-BR, sem exceções de escopo mínimo.
@@ -86,7 +86,7 @@ Prioridade esta entrega: **escopo mínimo**. Escopo completo e bônus ficam regi
 
 ## 6. Perguntas para a dupla resolver
 
-- **Q-01** Qual é a tag exata congelada para a turma (Core e módulos)? Ela não aparece em `README.md` nem em `CONTRIBUTING.md` e está pendente de confirmação.
+- **Q-01** Qual é a tag exata congelada para a turma (Core e módulos)? Ela não aparece em `README.md` nem em `CONTRIBUTING.md` e **não pôde ser confirmada**. A dupla adotou `meuPia/core v1.4.1` (commit `68824d7f9e91f71670f3f466c0a5865a8685f020`) como versão substituta para integração e aceite, sem declarar que essa é a tag original da turma.
 - **Q-02** Onde estão documentadas as interfaces públicas do Core nessa tag e quais são seus formatos de entrada/saída?
 - **Q-03** Quais tipos de variáveis e quais operadores o parser real aceita na tag confirmada (inteiro, real, texto, lógico; `+`, `-`, `*`, `/`; comparadores; `e`/`ou`/`não`)?
 - **Q-04** O Core expõe parser e execução como etapas separadas, de modo a validar o Portugol antes de executá-lo? Como ele reporta erros?
@@ -125,6 +125,6 @@ Prioridade esta entrega: **escopo mínimo**. Escopo completo e bônus ficam regi
 - [x] `README.md` e `CONTRIBUTING.md` lidos.
 - [x] Requisitos do escopo mínimo numerados como `RF-01` a `RF-24`.
 - [x] Restrições, escopo completo, bônus e perguntas registrados.
-- [x] Tag da turma sinalizada como pendente de confirmação.
+- [x] Tag da turma sinalizada como não confirmada; versão substituta fixada pela dupla registrada em `docs/decisoes.md` (D-06).
 - [x] Decisões técnicas apresentadas como propostas sujeitas à revisão da dupla.
 - [x] Nenhum outro arquivo alterado e nenhum código implementado.
