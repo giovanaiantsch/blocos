@@ -1,3 +1,5 @@
+import { conectarEntrada, expressaoDaEntrada, preencherEntradasPadrao, restaurarExpressao } from './operadores.js';
+
 /**
  * Definições puras dos blocos de entrada e saída. Nenhuma referência a DOM ou
  * ao Blockly no carregamento do módulo: o registro recebe o Blockly injetado.
@@ -18,7 +20,7 @@ export const DEFINICOES_BLOCOS = Object.freeze([
     message0: 'atribua %1 <- %2',
     args0: [
       { type: 'field_input', name: 'VAR', text: 'x' },
-      { type: 'field_input', name: 'EXPR', text: 'x * 2' },
+      { type: 'input_value', name: 'EXPR', check: 'Expression' },
     ],
     previousStatement: null,
     nextStatement: null,
@@ -29,7 +31,7 @@ export const DEFINICOES_BLOCOS = Object.freeze([
   {
     type: 'escreva',
     message0: 'escreva %1',
-    args0: [{ type: 'field_input', name: 'EXPR', text: 'x' }],
+    args0: [{ type: 'input_value', name: 'EXPR', check: 'Expression' }],
     previousStatement: null,
     nextStatement: null,
     colour: 120,
@@ -50,13 +52,31 @@ export function blocoParaJSON(bloco) {
       return {
         tipo: 'atribuir',
         variavel: bloco.getFieldValue('VAR'),
-        expressao: bloco.getFieldValue('EXPR'),
+        expressao: expressaoDaEntrada(bloco, 'EXPR'),
       };
     case 'escreva':
-      return { tipo: 'escreva', expressao: bloco.getFieldValue('EXPR') };
+      return { tipo: 'escreva', expressao: expressaoDaEntrada(bloco, 'EXPR') };
     default:
       return null;
   }
+}
+
+export function restaurarBlocoLeiaEscreva(dados, workspace) {
+  const bloco = workspace.newBlock(dados.tipo);
+  if (dados.tipo === 'leia') {
+    bloco.setFieldValue(String(dados.variavel ?? 'x'), 'VAR');
+  } else {
+    const expressao = String(dados.expressao ?? 'x');
+    const conectado = conectarEntrada(bloco, 'EXPR', restaurarExpressao(expressao, workspace));
+    // Workspaces de teste e versões antigas podem usar campo de texto em vez
+    // de entrada conectável: preservar a expressão é mais importante que a
+    // árvore visual nesses casos.
+    if (!conectado && typeof bloco.setFieldValue === 'function') {
+      bloco.setFieldValue(expressao, 'EXPR');
+    }
+  }
+  preencherEntradasPadrao(bloco, workspace);
+  return bloco;
 }
 
 export default DEFINICOES_BLOCOS;

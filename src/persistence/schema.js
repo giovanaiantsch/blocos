@@ -1,3 +1,4 @@
+import { expressaoAceita } from '../generation/operadores.js';
 import MENSAGENS, { mensagemBlocoDesconhecido } from '../messages/index.js';
 
 export const VERSAO_PROJETO = 1;
@@ -38,6 +39,14 @@ function contemBlocos(blocos) {
   return lista(blocos) ? blocos.length > 0 : false;
 }
 
+function validarExpressaoCampo(valor, erros, caminho, nome, mensagemVazio = MENSAGENS.expressaoIncompleta) {
+  if (!textoNaoVazio(valor)) {
+    erros.push(mensagemVazio);
+  } else if (!expressaoAceita(valor)) {
+    erros.push(`${caminho}: operador não aceito em ${nome}.`);
+  }
+}
+
 function validarBloco(bloco, erros, caminho = 'bloco') {
   if (!bloco || typeof bloco !== 'object' || Array.isArray(bloco)) {
     erros.push(`${caminho}: bloco inválido.`);
@@ -59,9 +68,7 @@ function validarBloco(bloco, erros, caminho = 'bloco') {
       if (!textoNaoVazio(bloco.variavel)) {
         erros.push(`${caminho}: informe a variável da atribuição.`);
       }
-      if (!textoNaoVazio(bloco.expressao)) {
-        erros.push(MENSAGENS.expressaoIncompleta);
-      }
+      validarExpressaoCampo(bloco.expressao, erros, caminho, 'a expressão');
       break;
     case 'leia':
       if (!textoNaoVazio(bloco.variavel)) {
@@ -70,14 +77,16 @@ function validarBloco(bloco, erros, caminho = 'bloco') {
       break;
     case 'escreva':
     case 'operador':
-      if (!textoNaoVazio(bloco.expressao)) {
-        erros.push(MENSAGENS.expressaoIncompleta);
-      }
+      validarExpressaoCampo(bloco.expressao, erros, caminho, 'a expressão');
       break;
     case 'se':
-      if (!textoNaoVazio(bloco.condicao)) {
-        erros.push(`${caminho}: informe a condição do bloco se.`);
-      }
+      validarExpressaoCampo(
+        bloco.condicao,
+        erros,
+        caminho,
+        'a condição do bloco se',
+        `${caminho}: informe a condição do bloco se.`,
+      );
       if (!bloco.ramos || !lista(bloco.ramos.entao) || !lista(bloco.ramos.senao ?? [])) {
         erros.push(`${caminho}: os ramos do bloco se devem ser listas de blocos.`);
       } else {
@@ -86,9 +95,13 @@ function validarBloco(bloco, erros, caminho = 'bloco') {
       }
       break;
     case 'enquanto':
-      if (!textoNaoVazio(bloco.condicao)) {
-        erros.push(`${caminho}: informe a condição do bloco enquanto.`);
-      }
+      validarExpressaoCampo(
+        bloco.condicao,
+        erros,
+        caminho,
+        'a condição do bloco enquanto',
+        `${caminho}: informe a condição do bloco enquanto.`,
+      );
       if (!lista(bloco.corpo)) {
         erros.push(`${caminho}: o corpo do bloco enquanto deve ser uma lista de blocos.`);
       } else {

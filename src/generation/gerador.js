@@ -14,7 +14,11 @@ function coletarVariaveis(blocos, variaveis) {
       bloco.tipo === 'para'
     ) {
       if (typeof bloco.variavel === 'string' && bloco.variavel.trim()) {
-        variaveis.set(bloco.variavel, bloco.tipoVariavel ?? SINTAXE.tipoPadrao);
+        // Uma declaração explícita não pode ser sobrescrita pelo tipo padrão
+        // de uma atribuição posterior à mesma variável.
+        if (!variaveis.has(bloco.variavel) || bloco.tipoVariavel) {
+          variaveis.set(bloco.variavel, bloco.tipoVariavel ?? SINTAXE.tipoPadrao);
+        }
       }
     }
 
