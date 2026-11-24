@@ -1,0 +1,13 @@
+{
+  "versao": 1,
+  "titulo": "Enquanto",
+  "blocos": [
+    { "tipo": "declarar", "variavel": "x", "tipoVariavel": "inteiro" },
+    { "tipo": "atribuir", "variavel": "x", "expressao": "0" },
+    { "tipo": "enquanto", "condicao": "x < 3", "corpo": [
+      { "tipo": "escreva", "expressao": "x" },
+      { "tipo": "atribuir", "variavel": "x", "expressao": "x + 1" }
+    ] }
+  ],
+  "entrada": []
+}

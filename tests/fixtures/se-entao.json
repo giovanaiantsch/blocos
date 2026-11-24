@@ -1,0 +1,12 @@
+{
+  "versao": 1,
+  "titulo": "Se maior",
+  "blocos": [
+    { "tipo": "leia", "variavel": "x" },
+    { "tipo": "se", "condicao": "x > 3", "ramos": {
+      "entao": [{ "tipo": "escreva", "expressao": "\"maior\"" }],
+      "senao": [{ "tipo": "escreva", "expressao": "\"menor\"" }]
+    } }
+  ],
+  "entrada": [5]
+}

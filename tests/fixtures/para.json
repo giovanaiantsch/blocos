@@ -1,0 +1,10 @@
+{
+  "versao": 1,
+  "titulo": "Para",
+  "blocos": [
+    { "tipo": "para", "variavel": "i", "inicio": 1, "fim": 3, "passo": 1, "corpo": [
+      { "tipo": "escreva", "expressao": "i" }
+    ] }
+  ],
+  "entrada": []
+}
