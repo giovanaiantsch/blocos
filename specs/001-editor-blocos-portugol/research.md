@@ -162,12 +162,14 @@ conferida remotamente e registrada em `docs/decisoes.md` (D-06).
   necessária.
 - **Decisão**: aceitar `id`, `titulo`, `descricao` (ou `instrucoes`),
   `codigoInicial` e `codigoTeste`, ignorando `mapa`. Derivar os blocos
-  permitidos de `codigoInicial` + `descricao`, após remover comentários e
-  literais de texto, com mapeamento fixo para as construções implementadas
-  pelo editor e ordem canônica. Ver `contracts/mission-json.md` e D-07.
+  permitidos de `codigoInicial` (inclusive comentários) + `descricao`, após
+  remover literais de texto e marcas de Markdown, com mapeamento fixo para as
+  construções implementadas pelo editor e ordem canônica da toolbox. Ver
+  `contracts/mission-json.md` e D-07.
 - **Par de missões com conjuntos distintos**: `calculo_gn_taximetro` →
-  `declarar`, `escreva`, `op_soma`; `fila_prioridade_simples` → `declarar`,
-  `atribuir`, `escreva`, `se` (o `se` vem de "SE / SENAO" na descrição). A
+  `escreva`, `expressao_livre`, `declarar`, `op_soma`; `fila_prioridade_simples`
+  → `escreva`, `expressao_livre`, `declarar`, `atribuir`, `se` (o `se` vem do
+  comentário `SE / SENAO` no código inicial, não da descrição oficial). A
   primeira não oferece `atribuir` nem `se`; a segunda não oferece `op_soma`.
 
 ### R9 — Interface pública do módulo Grid na versão fixada (EC-02/Q-07)

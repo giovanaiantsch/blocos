@@ -41,9 +41,12 @@ não possui lista de blocos; portanto a derivação é determinística e testáv
 2. Limpar o `codigoInicial`: remover comentários `//` até o fim da linha e
    literais entre aspas simples ou duplas. Limpar a descrição: remover marcas
    de Markdown (`*`, `_`, `` ` ``, `#`).
-3. Caixar ambos para minúsculas. Procurar operadores **somente no código**
-   (a descrição usa `**negrito**` e outros marcadores que não são operadores) e
-   procurar as demais construções no código ou na descrição.
+3. Guardar os comentários `//` do código como pistas. Caixar tudo para
+   minúsculas. Procurar operadores **somente no código** (a descrição usa
+   `**negrito**`, que não é multiplicação, e o `<-` de atribuição não é
+   subtração). Procurar `se/senao`, `enquanto` e `para` no código ou nas pistas,
+   mas exigir `faca`/`ate` quando a pista vier da prosa ("para praticar" não é
+   laço).
 4. intersectar o resultado com o catálogo implementado pelo editor e ordenar
    pela ordem canônica da toolbox, ignorando categorias vazias.
 
@@ -53,7 +56,7 @@ não possui lista de blocos; portanto a derivação é determinística e testáv
 | `escreva(` | `escreva`, `expressao_livre` |
 | `var` ou `:` seguido de tipo | `declarar` |
 | `<-` | `atribuir` |
-| `se`, `senao` (código ou descrição) | `se` |
+| `se`, `senao` (código, comentários ou descrição) | `se` |
 | `enquanto` | `enquanto` |
 | `para` | `para` |
 | `+`, `-`, `*`, `/` | `op_soma`, `op_subtracao`, `op_multiplicacao`, `op_divisao` |

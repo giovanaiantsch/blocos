@@ -250,8 +250,8 @@ missão todos os blocos do catálogo continuam disponíveis.
    inicial declara variável e escreve uma soma, **Quando** a toolbox é montada,
    **Então** aparecem `declarar`, `escreva` e `op_soma`, e não aparecem
    `atribuir`, `se`, `enquanto`, `para` nem `leia`.
-3. **Dado** a missão oficial "A Fila VIP" (`fila_prioridade_simples`), cuja
-   descrição pede `SE / SENAO` e cujo código inicial usa `<-`, **Quando** essa
+3. **Dado** a missão oficial "A Fila VIP" (`fila_prioridade_simples`), cujo
+   código inicial traz o comentário `SE / SENAO` e usa `<-`, **Quando** essa
    missão é carregada, **Então** a toolbox troca para o conjunto da segunda
    missão: `atribuir` e `se` aparecem e `op_soma` da missão anterior não aparece,
    provando que as duas missões filtram de forma distinta.

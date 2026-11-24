@@ -13,25 +13,29 @@ meuPiá, antes do Portugol escrito.
 > `68824d7f9e91f71670f3f466c0a5865a8685f020`, como versão substituta para a
 > integração e o aceite.
 
-**Testes:** 67 (18 arquivos, 0 falhas) · **Cobertura:** 93,69% de linhas e
-declarações · 80,58% de desvios · 94,28% de funções
+**Testes:** 95 (24 arquivos, 0 falhas) · **Cobertura:** 95,58% de linhas e
+declarações · 80,12% de desvios · 96,42% de funções
 
-Sem `MEUPIA_COMANDO`/`MEUPIA_PYTHON`, `npm test` executa 66 testes e marca o
-aceite real como `skipped`; com o Core fixado configurado, os 67 passam.
+Sem `MEUPIA_COMANDO`/`MEUPIA_PYTHON`, `npm test` executa 93 testes e marca os
+dois aceites reais como `skipped`; com o Core fixado configurado, os 95 passam.
 
-A cobertura é medida por `npm run coverage` e abrange o núcleo puro
-(`src/generation/`, `src/persistence/` e `src/core/`), conforme a spec. A
-interface e as definições de blocos são verificadas por testes unitários e
-pela validação no Blockly real; não entram no percentual acima. Os números
-acima foram regenerados após o ajuste do `favicon` e permaneceram idênticos.
+A cobertura é medida por `npm run coverage` e abrange
+`src/generation/`, `src/persistence/`, `src/core/`, `src/missoes/` e
+`src/blocks/` (T053). A interface (`src/ui/`) fica fora do percentual e é
+verificada por testes de HTML e pela validação no Blockly real. Os números
+acima vieram de `coverage/coverage-summary.json`, regenerado no segundo
+incremento.
 
 **Aceite real:** `tests/fixtures/dobrar-entrada.json` com entrada `3` produziu
 saída **`6`** (`status: sucesso`), usando apenas as interfaces públicas do Core:
-`meupia <arquivo.por>` e `python output/<nome>.py`. No navegador, os dois ramos
-de `se/senão`, `enquanto`, `para`, salvar → reabrir → executar novamente e o
-programa combinado também passaram com o Core `v1.4.1`. Evidência completa em
-[`docs/verificacao-final.md`](docs/verificacao-final.md); roteiro de apresentação
-em [`docs/demo.md`](docs/demo.md).
+`meupia <arquivo.por>` e `python output/<nome>.py`. O segundo aceite,
+`tests/fixtures/grid-visitar.json`, gerou `usar "grid"`, `grid_iniciar(3, 3)` e
+`grid_visitar(2, 3, 1)` e produziu **`celula visitada`** com o plugin oficial
+instalado por `mpgp instale grid`. No navegador, os dois ramos de `se/senão`,
+`enquanto`, `para`, salvar → reabrir → executar novamente, o programa combinado,
+a troca de missões e o módulo Grid também passaram com o Core `v1.4.1`.
+Evidência completa em [`docs/verificacao-final.md`](docs/verificacao-final.md);
+roteiro de apresentação em [`docs/demo.md`](docs/demo.md).
 
 Os blocos de operadores, `se/senão`, `enquanto` e `para` usam a sintaxe
 registrada em `docs/decisoes.md` (D-04): ela foi **executada com sucesso** na
@@ -49,6 +53,28 @@ $env:MEUPIA_PYTHON  = "$PWD\.venv-core\Scripts\python.exe"
 npm run test:core-real
 npm run test:acceptance
 ```
+
+Para o aceite do módulo Grid, instale também o plugin no mesmo venv com
+`.\.venv-core\Scripts\mpgp.exe instale grid` (`meupia-grid==1.0.2`).
+
+## 🎯 Missões do Desafios e módulo Grid
+
+O seletor **Missão** carrega os JSON versionados em `public/missoes/` e ajusta a
+toolbox ao conteúdo da missão, sem lista de blocos no arquivo: a derivação é
+determinística e lê o código inicial, os comentários e a descrição. A missão
+`O Taxímetro` oferece declarar/escreva/soma, enquanto `A Fila VIP` troca a soma
+por atribuição e `se`; `Missão livre` devolve os 18 blocos do catálogo. Também
+é possível carregar uma missão local pelo botão de arquivo; trocar de missão com
+blocos incompatíveis pede confirmação.
+
+A missão **Visitar uma célula do Grid** exemplifica o módulo oficial: os blocos
+`usar "grid"`, `grid_iniciar` e `grid_visitar` aparecem numa categoria própria.
+O gerador emite a diretiva uma única vez, logo após o cabeçalho, e as chamadas
+na seção `inicio`. O editor não importa nem copia código do plugin; a execução
+usa somente a CLI pública do Core e o módulo instalado pelo gerenciador oficial.
+Detalhes e contratos em
+[`specs/001-editor-blocos-portugol/contracts`](specs/001-editor-blocos-portugol/contracts)
+e [`docs/decisoes.md`](docs/decisoes.md) (D-07/D-08).
 
 A referência remota foi conferida com
 `git ls-remote --tags https://github.com/meuPia/core.git "refs/tags/v1.4.1*"`:

@@ -6,8 +6,14 @@ export default defineConfig({
     include: ['tests/**/*.test.js'],
     coverage: {
       provider: 'v8',
-      include: ['src/generation/**', 'src/persistence/**', 'src/core/**'],
-      exclude: ['src/ui/**', 'src/blocks/**', 'tests/**'],
+      include: [
+        'src/generation/**',
+        'src/persistence/**',
+        'src/core/**',
+        'src/missoes/**',
+        'src/blocks/**',
+      ],
+      exclude: ['src/ui/**', 'tests/**'],
       reporter: ['text', 'html', 'lcov', 'json-summary'],
       reportsDirectory: 'coverage',
     },

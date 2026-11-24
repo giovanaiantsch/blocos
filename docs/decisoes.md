@@ -156,13 +156,15 @@ os arquivos reais usam `descricao` e `codigoInicial` (três também trazem
 
 - O loader aceita `id`, `titulo`, `descricao` (ou `instrucoes` como apelido),
   `codigoInicial` e `codigoTeste`, e ignora `mapa` e outros campos extras.
-- A derivação do conjunto permitido lê `codigoInicial` e `descricao`, remove
-  comentários `//` e literais de texto, e mapeia construções para os tipos de
-  bloco do catálogo do editor em ordem canônica (a ordem do arquivo não altera
-  o resultado).
-- Missões usadas no teste de filtros: `calculo_gn_taximetro` (deriva
-  `declarar`, `escreva`, `op_soma`) e `fila_prioridade_simples` (deriva
-  `declarar`, `atribuir`, `escreva`, `se`, ambos do código e da descrição).
+- A derivação do conjunto permitido lê `codigoInicial` e `descricao`. Os
+  operadores e as construções de código são lidos após remover comentários `//`
+  e literais de texto; pistas explícitas como `SE / SENAO` são lidas dos
+  comentários e da descrição sem transformar prosa ("para praticar") em laço.
+  O resultado é intersectado com o catálogo e ordenado pela toolbox.
+- Missões usadas no teste de filtros: `calculo_gn_taximetro` (deriva `escreva`,
+  `expressao_livre`, `declarar`, `op_soma`) e `fila_prioridade_simples` (deriva
+  `escreva`, `expressao_livre`, `declarar`, `atribuir`, `se`, este último do
+  comentário `SE / SENAO` do código inicial).
 - Sem missão, a toolbox completa do escopo mínimo é preservada (RT-06).
 
 ## D-08 — Módulo escolhido para EC-02 (Q-07)
@@ -209,3 +211,11 @@ celula visitada
 As linhas `[Mock Grid]` são o comportamento do plugin fora do navegador; o
 Core e o plugin executados são os reais, sem mock no editor. Nenhum arquivo do
 Core ou do módulo foi copiado para este repositório (RT-02).
+
+Em 2026-11-23 o aceite versionado `tests/acceptance/modulo-grid.test.js` gerou
+exatamente esse Portugol a partir de `tests/fixtures/grid-visitar.json` e
+executou no Core real `v1.4.1` em 645 ms, com `status: sucesso`, sem erro e sem
+interrupção por limite; a saída continha a inicialização do grid, a célula
+visitada no passo 1 e `celula visitada`. O gerador emite `usar "grid"` uma única
+vez mesmo quando o bloco aparece aninhado em `se`, e não emite nada quando não
+há bloco de módulo no programa.

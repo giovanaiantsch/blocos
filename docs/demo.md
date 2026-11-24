@@ -18,8 +18,8 @@ Antes de começar, confirme em voz alta que o ambiente aponta para o venv com
 ## 0:00 — 0:45 | Abrir e mostrar os três painéis
 
 Abra o editor. Aponte, na ordem, para **Blocos**, **Portugol gerado** e
-**Saída da execução**. Diga que o Portugol é recalculado a cada mudança dos
-blocos — não há botão “gerar”.
+**Saída da execução**, e para o seletor **Missão** acima dos blocos. Diga que o
+Portugol é recalculado a cada mudança dos blocos — não há botão “gerar”.
 
 ## 0:45 — 2:00 | Montar o exemplo canônico
 
@@ -60,23 +60,37 @@ saída é `8`. Isso prova que o arquivo salvo restaura o programa e que a entrad
 é lida na reexecução. Se sobrar tempo, repita o ciclo com
 `escopo-minimo-combinado.json` e confirme `maior / 0 / 1 / 1 / 2` novamente.
 
-## 8:00 — 9:00 | Recusar um arquivo inválido
+## 8:00 — 8:35 | Recusar um arquivo inválido
 
 Carregue um JSON malformado ou com versão incompatível. Leia a mensagem em
 português do Brasil e mostre que os blocos e o Portugol do programa aberto
 continuam intactos.
 
-## 9:00 — 9:45 | Fechar com a ressalva
+## 8:35 — 9:20 | Missões que filtram a toolbox
+
+No seletor **Missão**, escolha `O Taxímetro`: a caixa de ferramentas perde
+atribuição, decisão e entrada. Escolha `A Fila VIP`: a soma desaparece e surgem
+atribuição e `se`. Explique que os dois conjuntos vêm do próprio JSON da missão
+do Desafios, sem lista de blocos no arquivo. Volte para **Missão livre** e
+mostre que os 18 blocos retornam; recarregue `dobrar-entrada.json` e confirme
+`3 → 6` mais uma vez.
+
+## 9:20 — 9:50 | Módulo Grid no Core real
+
+Escolha a missão **Visitar uma célula do Grid** para ver a categoria do módulo,
+carregue `tests/fixtures/grid-visitar.json` e mostre no painel do meio a diretiva
+única e as duas chamadas do Grid. Clique em **Executar** e leia a linha
+`celula visitada` precedida das mensagens do plugin oficial. Reforce que o
+editor apenas gera Portugol: quem executa é o Core `v1.4.1` com o módulo
+instalado pelo gerenciador oficial.
+
+## 9:50 — 10:00 | Fechar com a ressalva
 
 Repita que a tag original da turma não pôde ser confirmada e que `v1.4.1` é a
 versão substituta fixada pela dupla, com o hash completo registrado na
 documentação. Convide a perguntar sobre o que ficou pendente: confirmação
-documental de tipos/operadores, traduções definitivas das mensagens do Core e o
-teste de aceite versionado de reabertura.
-
-## 9:45 — 10:00 | Margem
-
-Feche a aba de depuração e deixe o repositório na branch
-`001-editor-blocos-portugol`. Se algo não carregar, use as tabelas de
-[`verificacao-final.md`](verificacao-final.md) em vez de improvisar uma
-explicação.
+documental de tipos/operadores, traduções definitivas das mensagens do Core, o
+teste de aceite versionado de reabertura e a lacuna do README do Grid. Deixe o
+repositório na branch `001-editor-blocos-portugol`; se algo não carregar, use as
+tabelas de [`verificacao-final.md`](verificacao-final.md) em vez de improvisar
+uma explicação.

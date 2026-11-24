@@ -8,36 +8,38 @@
 
 | Comando | Resultado |
 | --- | --- |
-| `npm test` | 18 arquivos, **67 testes**, 0 falhas com o Core configurado (sem ele: 66 passam e 1 aceite é `skipped`) |
-| `npm run coverage` | **93,69% linhas**, **93,69% declarações**, **80,58% desvios**, **94,28% funções** |
-| `npm run test:acceptance` | **1 arquivo, 1 teste, 0 falhas** com o Core real `v1.4.1` |
+| `npm test` | 24 arquivos, **95 testes**, 0 falhas com o Core configurado (sem ele: 93 passam e 2 aceites são `skipped`) |
+| `npm run coverage` | **95,58% linhas**, **95,58% declarações**, **80,12% desvios**, **96,42% funções** |
+| `npm run test:acceptance` | **2 arquivos, 2 testes, 0 falhas** com o Core real `v1.4.1` (`3 → 6` em 530 ms; Grid em 645 ms) |
 | `npm run test:core-real` | **ACEITE REAL: OK (entrada 3 -> saída 6)** |
-| Verificação no navegador | **8/8 cenários** com Core `v1.4.1`: `3 → 6`, salvar/reabrir `4 → 8`, dois ramos de `se`, `enquanto`, `para` e combinado com entradas `5` e `2`; passada instrumentada com 0 erros de console |
+| Verificação no navegador | **8/8 cenários** do escopo mínimo com Core `v1.4.1` e repetição de `3 → 6` no segundo incremento, com 0 erros de console; detalhes abaixo |
 
-Fonte: `coverage/coverage-summary.json`, regenerado na revisão final.
+Fonte: `coverage/coverage-summary.json`, regenerado em 2026-11-23 após o segundo
+incremento. A suíte com o Core configurado passou com 95/95; sem as variáveis de
+ambiente, 93 passam e os dois aceites reais ficam `skipped` — nunca simulados.
 
-Durante uma passagem com o Chrome de depuração e o Vite rodando ao mesmo tempo,
-o aceite real excedeu o limite de 5 s por carga na máquina. Os processos
-temporários foram encerrados e a suíte final passou com 67/67; o limite de 5 s
+Durante uma passagem anterior com o Chrome de depuração e o Vite rodando ao
+mesmo tempo, o aceite real excedeu o limite de 5 s por carga na máquina. Os
+processos temporários foram encerrados e a suíte final passou; o limite de 5 s
 permanece como requisito de execução, não foi alterado.
 
 ### Escopo da cobertura
 
-Conforme `vitest.config.js` e T003, o percentual acima considera apenas o
-núcleo puro: `src/generation/`, `src/persistence/` e `src/core/`. Os diretórios
-`src/ui/` e `src/blocks/` ficam fora do cálculo, mas são exercitados por testes
-unitários de integração e pela verificação no navegador descrita abaixo.
+Conforme `vitest.config.js` e T053, o percentual acima abrange
+`src/generation/`, `src/persistence/`, `src/core/`, `src/missoes/` e
+`src/blocks/`. O diretório `src/ui/` fica fora do cálculo e é exercitado por
+testes de HTML e pela verificação no Blockly real.
 
-| Arquivo do núcleo | Linhas | Desvios |
+| Arquivo | Linhas | Desvios |
 | --- | --- | --- |
-| `src/core/configuracao.js` | 100% | 25,00% |
 | `src/core/runner.js` | 94,95% | 76,66% |
-| `src/generation/gerador.js` | 95,61% | 82,50% |
-| `src/generation/operadores.js` | 97,95% | 90,00% |
+| `src/generation/gerador.js` | 95,62% | 86,44% |
 | `src/generation/sintaxe.js` | 100% | 100% |
-| `src/persistence/carregar.js` | 100% | 100% |
-| `src/persistence/salvar.js` | 100% | 100% |
-| `src/persistence/schema.js` | 86,02% | 76,27% |
+| `src/persistence/schema.js` | 86,06% | 77,27% |
+| `src/missoes/derivar.js` | 100% | 88,57% |
+| `src/missoes/schema.js` | 88,88% | 81,25% |
+| `src/blocks/modulo-grid.js` | 98,85% | 50,00% |
+| `src/blocks/toolboxParaMissao.js` | 100% | 100% |
 
 ## Verificação no Blockly real
 
@@ -151,9 +153,9 @@ $env:MEUPIA_PYTHON = "$PWD\.venv-core\Scripts\python.exe"
 npx vite --host 127.0.0.1 --port 5200 --strictPort
 ```
 
-A suíte foi rodada novamente após a correção do ícone: `npm test` com 18
-arquivos/67 testes/0 falhas e `npm run coverage` com 93,69% linhas e
-declarações, 80,58% desvios e 94,28% funções — mesmos valores do resumo
+A suíte foi rodada novamente no segundo incremento: `npm test` com 24
+arquivos/95 testes/0 falhas e `npm run coverage` com 95,58% linhas e
+declarações, 80,12% desvios e 96,42% funções — mesmos valores do resumo
 versionado, atualizados no topo do `README.md`.
 
 ## Validação manual final (Core `v1.4.1`)
@@ -198,6 +200,61 @@ Ainda pendente, mesmo com a versão fixada:
   na sessão final) e confirmação da tag original da turma (T006). A validação
   manual acima cobre execução e reabertura, mas não substitui o checklist
   integral do quickstart.
+
+## Segundo incremento — missões e módulo Grid (2026-11-23)
+
+### EC-01: missões do Desafios no navegador
+
+Ambiente medido com o editor servido em `http://127.0.0.1:5200/` e o Core real
+`v1.4.1` configurado na ponte. Chrome headless controlado por CDP na porta 9333,
+sem hook de depuração na página: o projeto entrou pelo input de arquivo real e o
+botão **Executar** foi acionado por evento de mouse real.
+
+| Ação na interface | Resultado medido |
+| --- | --- |
+| Carregar `dobrar-entrada.json`, entrada `3`, Executar | saída `6`, `status: sucesso` |
+| Selecionar `O Taxímetro` | descrição exibida iniciando `Missão: O Taxímetro - Calculando o g(n)`; categorias da toolbox de **5 para 3** |
+| Confirmar a troca de programa incompatível | caixa de diálogo em pt-BR exibida e aceita |
+| Voltar para `Missão livre`, entrada `3`, Executar | categorias de **3 para 5**; saída `6` novamente |
+
+Os três painéis continuavam visíveis e o console registrou **0 exceções e 0
+erros**. `tests/integration/missao-toolbox.test.js` complementa a prova: as duas
+missões oficiais produzem conjuntos diferentes — `op_soma` só no taxímetro,
+`atribuir`/`se` só na Fila VIP — e sem missão os 18 blocos do catálogo
+permanecem.
+
+### EC-02: módulo Grid no Core real e no navegador
+
+`npm run test:acceptance` executou **2 arquivos, 2 testes, 0 falhas**. O aceite
+`dobrar-entrada.json` levou 530 ms; o de `grid-visitar.json`, **645 ms**, com
+`status: sucesso`, `erro` vazio e `interrompidoPorLimite: false`. O Portugol
+gerado foi exatamente o do contrato, com `usar "grid"` uma única vez:
+
+```text
+algoritmo "Grid do Iniciante"
+usar "grid"
+
+inicio
+    grid_iniciar(3, 3)
+    grid_visitar(2, 3, 1)
+    escreva("celula visitada")
+fim_algoritmo
+```
+
+No navegador, a missão `Visitar uma célula do Grid` acrescentou a categoria do
+módulo; depois de carregar `tests/fixtures/grid-visitar.json` e clicar em
+**Executar**, a saída foi, linha a linha:
+
+```text
+[Mock Grid] Grid inicializado com tamanho 3x3
+[Mock Grid] Célula (2, 3) visitada no passo 1
+celula visitada
+```
+
+As linhas `[Mock Grid]` vêm do plugin oficial instalado por `mpgp instale grid`;
+não há mock no editor. O editor não importa nem copia arquivos do Core ou do
+módulo (RT-02). A ressalva documental do README do Grid segue registrada em
+[`decisoes.md`](decisoes.md) (D-08).
 
 ## Publicação da branch
 
