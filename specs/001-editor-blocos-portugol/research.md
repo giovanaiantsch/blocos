@@ -144,6 +144,62 @@ conferida remotamente e registrada em `docs/decisoes.md` (D-06).
 - **Resultado**: o aceite real com `dobrar-entrada.json` (entrada `3` → saída
   `6`) passou nessa versão; ver `docs/verificacao-final.md` e D-06.
 
+### R8 — Schema e carregamento das missões do Desafios (EC-01/Q-08)
+
+- **Fonte**: README oficial em
+  https://raw.githubusercontent.com/meuPia/desafios/main/README.md e os 14
+  arquivos `.json` da raiz do repositório, listados por
+  https://api.github.com/repos/meuPia/desafios/git/trees/main?recursive=1
+  (consultados em 2026-11-23).
+- **Achado**: o README documenta `id`, `titulo`, `instrucoes` e `codigoTeste`,
+  mas os arquivos reais usam `descricao` e `codigoInicial`; três missões
+  (`a_estrela_manhattan`, `entregador_pizza`, `fuga_labirinto`) acrescentam
+  `mapa` (`largura`, `altura`, `inicio`, `objetivo`, `celulas`). Nenhum arquivo
+  traz lista de blocos/toolbox/permissões.
+- **Distribuição**: a própria README afirma que são JSON estáticos servidos por
+  CDN e consumidos pelo meuPiá Lab. Para o editor, o carregamento local de um
+  arquivo no mesmo formato é suficiente e reproduzível; nenhuma API remota é
+  necessária.
+- **Decisão**: aceitar `id`, `titulo`, `descricao` (ou `instrucoes`),
+  `codigoInicial` e `codigoTeste`, ignorando `mapa`. Derivar os blocos
+  permitidos de `codigoInicial` + `descricao`, após remover comentários e
+  literais de texto, com mapeamento fixo para as construções implementadas
+  pelo editor e ordem canônica. Ver `contracts/mission-json.md` e D-07.
+- **Par de missões com conjuntos distintos**: `calculo_gn_taximetro` →
+  `declarar`, `escreva`, `op_soma`; `fila_prioridade_simples` → `declarar`,
+  `atribuir`, `escreva`, `se` (o `se` vem de "SE / SENAO" na descrição). A
+  primeira não oferece `atribuir` nem `se`; a segunda não oferece `op_soma`.
+
+### R9 — Interface pública do módulo Grid na versão fixada (EC-02/Q-07)
+
+- **Fonte da diretiva**: Guia da Linguagem `v1.4.1`, seção 10 — `usar "nome"`
+  logo após a linha `algoritmo`; o gerador mapeia `grid` para
+  `from meupia_grid.plugin_grid import *`
+  (`meuPia/analyzers/code_generator.py`, `PLUGIN_IMPORT_MAP`). O registro
+  `mpgp` de `v1.4.1` aponta `grid` para `git+https://github.com/meuPia/grid.git`;
+  o comando correto é `mpgp instale grid` (não `install`).
+- **Fonte das funções**: README do Grid contém apenas `# grid`. As funções
+  públicas usadas nas missões oficiais (`a_estrela_manhattan.json`,
+  `fuga_labirinto.json`) são `grid_visitar(x, y, passo)`, `grid_olhar(x, y)` e
+  `grid_chegou_objetivo(x, y)`. O código publicado do plugin confirma essas
+  três e `grid_iniciar(largura, altura)`. A lacuna de documentação do README é
+  registrada (RT-03); nenhuma issue é publicada sem push da branch.
+- **Instalação e medição em 2026-11-23**: `mpgp instale grid` instalou
+  `meupia-grid==1.0.2` (commit `3ae471fff99c7a7aa6d3da254db660f1756bc9f1`).
+  O programa com `usar "grid"`, `grid_iniciar(3, 3)`, `grid_visitar(2, 3, 1)` e
+  `escreva("celula visitada")` compilou em 338 ms com `[COMPILED SUCCESSFULLY]`
+  e executou em 193 ms, produzindo três linhas:
+  `[Mock Grid] Grid inicializado com tamanho 3x3`,
+  `[Mock Grid] Célula (2, 3) visitada no passo 1` e `celula visitada`.
+- **Alternativas**: Maker tem README desatualizado (`fimenquanto`,
+  `mpm install`, `iot_ler` não implementado, pacote `maker/` em vez de
+  `meupia_maker`); IA é instalável, mas a primeira execução levou ~38 s por
+  causa do scikit-learn e `ia_treinar(0.0)` falha nas versões atuais — ambas
+  incompatíveis com o limite de 5 s. Ver D-08.
+- **Decisão**: implementar os blocos `usar_grid`, `grid_iniciar` e
+  `grid_visitar`, usando apenas a diretiva e as funções públicas documentadas.
+  Nenhum código do plugin é copiado para este repositório (RT-02).
+
 ## Incompatibilidades das propostas da PoC com a interface pública
 
 | Proposta da PoC | Compatibilidade | Ajuste necessário |
@@ -165,3 +221,9 @@ conferida remotamente e registrada em `docs/decisoes.md` (D-06).
   (`blockly@12.5.1`, Apache-2.0, `coverage/`).
 - Regra definitiva de mensagens de erro de runtime traduzidas versus exibidas
   conforme recebidas do Core.
+- README do módulo Grid vazio: a interface usada veio das missões oficiais e do
+  código publicado do plugin; registrar pendência documental no módulo quando a
+  branch for publicada (RT-03).
+- `mpgp` exige `setuptools<81` no ambiente de aceite porque `v1.4.1` importa
+  `pkg_resources`; o venv local usa `setuptools==80.9.0`. Nenhuma alteração foi
+  feita no Core.

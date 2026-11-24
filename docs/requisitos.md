@@ -68,15 +68,15 @@ Prioridade esta entrega: **escopo mínimo**. Escopo completo e bônus ficam regi
 - **RT-03 — Interface ausente.** Se faltar uma interface pública necessária, registrar a necessidade abrindo uma issue no repositório do módulo correspondente e resolver a integração com um **adaptador no editor**, sem alterar o módulo.
 - **RT-04 — Idioma único.** Toda interface, documentação e mensagem ao usuário em pt-BR, sem exceções de escopo mínimo.
 - **RT-05 — Etapa atual.** Nesta etapa, criar somente `docs/requisitos.md`: não alterar outros arquivos e não implementar código.
-- **RT-06 — Prioridade.** Priorizar o escopo mínimo (RF-01 a RF-24). Itens de escopo completo e bônus não entram na primeira entrega.
+- **RT-06 — Prioridade.** O escopo mínimo (RF-01 a RF-24) continua sendo a primeira entrega e não pode sofrer regressão. EC-01 e EC-02 entram como segundo incremento nesta branch, com especificação e planejamento prévios; BX-01 permanece fora (emenda 1.1.0 da constitution).
 - **RT-07 — Fluxo SDD.** Escrever/atualizar os artefatos de especificação antes do código; PRs devem descrever a mudança e o requisito atendido.
 
 ---
 
 ## 4. Escopo completo (após o escopo mínimo)
 
-- **EC-01 — Toolbox por missão.** Oferecer conjuntos de blocos por missão, com carregamento de missões do meuPiá Desafios (a forma de distribuição dessas missões está em Q-08).
-- **EC-02 — Blocos de módulo.** Acrescentar blocos de pelo menos um módulo do ecossistema — Grid, Maker ou IA — usando apenas interfaces públicas e respeitando a tag confirmada (a escolha está em Q-07).
+- **EC-01 — Toolbox por missão.** Oferecer conjuntos de blocos por missão, com carregamento de missões do meuPiá Desafios (a forma de distribuição dessas missões está em Q-08). **Incluído nesta branch em 2026-11-23** como segundo incremento, após os gates do escopo mínimo; spec, plano, contratos e tasks atualizados antes do código.
+- **EC-02 — Blocos de módulo.** Acrescentar blocos de pelo menos um módulo do ecossistema — Grid, Maker ou IA — usando apenas interfaces públicas e respeitando a tag confirmada (a escolha está em Q-07). **Incluído nesta branch em 2026-11-23** com o módulo Grid (vide Q-07).
 
 ## 5. Bônus
 
@@ -92,8 +92,8 @@ Prioridade esta entrega: **escopo mínimo**. Escopo completo e bônus ficam regi
 - **Q-04** O Core expõe parser e execução como etapas separadas, de modo a validar o Portugol antes de executá-lo? Como ele reporta erros?
 - **Q-05** Qual será o formato do JSON de projeto: serialização nativa da biblioteca de blocos ou formato próprio? Haverá versionamento do formato e campos como título/missão?
 - **Q-06** Como o bloco `leia` obtém a entrada durante a execução no navegador (campo interativo, fila de valores pré-definida ou API do Core)?
-- **Q-07** Qual módulo atenderá o EC-02 (Grid, Maker ou IA) e ele possui interfaces públicas utilizáveis na tag confirmada?
-- **Q-08** Como as missões do meuPiá Desafios são identificadas e carregadas (arquivo JSON, URL, API) para o EC-01?
+- **Q-07 (respondido em 2026-11-23)** Qual módulo atenderá o EC-02 (Grid, Maker ou IA) e ele possui interfaces públicas utilizáveis na tag confirmada? **Resposta: Grid.** O README do repositório `meuPia/grid` está vazio (lacuna registrada), mas as missões oficiais `a_estrela_manhattan.json` e `fuga_labirinto.json` documentam `usar "grid"`, `grid_visitar(...)`, `grid_olhar(...)` e `grid_chegou_objetivo(...)`, e o Core `v1.4.1` registra o plugin em `PLUGIN_IMPORT_MAP`. O plugin foi instalado com `mpgp instale grid` e um programa real com `grid_iniciar(3, 3)` + `grid_visitar(2, 3, 1)` foi aceito e executado. Maker e IA foram avaliados: Maker tem README com sintaxe antiga e pacote incompatível; IA depende de scikit-learn e levou ~38 s na primeira execução, estourando o limite de 5 s. Fontes e evidências em `research.md` R8/R9 e `docs/decisoes.md` (D-07/D-08).
+- **Q-08 (respondido em 2026-11-23)** Como as missões do meuPiá Desafios são identificadas e carregadas (arquivo JSON, URL, API) para o EC-01? **Resposta: arquivos JSON estáticos**, publicados na raiz de `meuPia/desafios` e consumidos via CDN pelo meuPiá Lab; o editor versiona cópias locais no formato oficial e também aceita um arquivo de missão escolhido pelo estudante. O schema documentado no README usa `id`, `titulo`, `instrucoes` e `codigoTeste`; os arquivos reais usam `descricao` e `codigoInicial` (e, em três missões, `mapa`). Nenhum arquivo traz lista explícita de blocos, então a toolbox é derivada das construções do código inicial e da descrição. Fonte: `research.md` R8.
 - **Q-09** Adotar Blockly? Se sim, qual versão, qual licença e como ele convive com a camada de adaptador?
 - **Q-10** Qual ferramenta de cobertura será usada, em qual diretório o relatório será versionado e quem atualiza o topo do `README.md` a cada entrega?
 - **Q-11** Qual convenção de mensagem de commit vinculará commit → task → requisito (por exemplo, `task: RF-07 — bloco leia`)?

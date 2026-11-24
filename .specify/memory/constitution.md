@@ -1,37 +1,45 @@
 <!--
 SYNC IMPACT REPORT
-Version change: N/A → 1.0.0 (adoção inicial; sem versão anterior)
-Modified principles: nenhuma (documento inédito)
+Version change: 1.0.0 → 1.1.0 (emenda aprovada pela dupla em 2026-11-23 para
+  incluir EC-01 e EC-02 nesta branch, após o escopo mínimo ter passado nos gates)
+Modified principles:
+  - I. Escopo mínimo primeiro → I. Escopo mínimo primeiro, depois escopo completo
 Added sections:
-  - Core Principles (I a V)
-  - Stack Inicial e Restrições Técnicas
-  - Fluxo de Desenvolvimento, Qualidade e Entrega
-  - Governance
+  - parágrafo sobre missões e blocos de módulo em Stack Inicial e Restrições
+    Técnicas
 Removed sections: nenhuma
 Follow-up TODOs:
   - Versão do Core fixada pela dupla: `meuPia/core v1.4.1`, commit
     `68824d7f9e91f71670f3f466c0a5865a8685f020` (Q-01 em docs/requisitos.md).
     A tag original da turma não pôde ser confirmada; esta é a versão substituta
     adotada para a integração e o aceite.
-  - Versão/licença do Blockly, ferramenta e diretório do relatório de cobertura,
-    convenção exata de commit e regra de comparação da saída a definir no plan.
+  - Tag original da turma (T006), confirmação documental de tipos/operadores
+    (T007/T026), mensagens de runtime (T019), teste de aceite de reabertura
+    (T036) e checklist integral do quickstart (T042) permanecem abertos.
+  - A derivação dos blocos permitidos a partir de missões e a interface pública
+    do módulo escolhido para EC-02 DEVEM ser registradas em `plan.md`,
+    `research.md` e `docs/decisoes.md` antes da implementação.
 -->
 
 # meuPiá Blocos Constitution
 
 ## Core Principles
 
-### I. Escopo mínimo primeiro
+### I. Escopo mínimo primeiro, depois escopo completo
 
-O editor DEVE entregar, na primeira versão, somente o escopo mínimo
-(RF-01 a RF-24). Funcionalidades de escopo completo (EC-01, EC-02) e bônus
-(BX-01) DEVEM ser registradas como planejamento posterior e NÃO DEVEM entrar
-nesta entrega. Cada decisão DEVE ser avaliada pelo menor conjunto que atende
-aos três painéis, à geração em tempo real, à execução pelo Core, à persistência
-em JSON e à rastreabilidade.
+O editor DEVE entregar primeiro o escopo mínimo (RF-01 a RF-24) e, somente
+depois de os gates de qualidade do princípio IV terem passado, DEVE acrescentar
+os itens de escopo completo **EC-01** (toolbox por missão) e **EC-02** (blocos
+de módulo). O bônus **BX-01** (Portugol → blocos) continua fora desta entrega.
+EC-01 e EC-02 DEVEM ser especificados, planejados e decompostos em tasks antes
+de qualquer código e NÃO DEVEM regressar o fluxo mínimo já aceito: sem missão
+carregada, a toolbox completa e o exemplo `3 → 6` permanecem intactos.
 
-**Justificativa:** a PoC precisa demonstrar o fluxo essencial do estudante sem
-diluir esforço em módulos, missões ou conversão reversa ainda não validados.
+**Justificativa:** a PoC precisava demonstrar primeiro o fluxo essencial do
+estudante sem diluir esforço em missões ou módulos não validados. Em
+2026-11-23, com o aceite real `3 → 6` e a cobertura medidos, a dupla aprovou a
+emenda que inclui EC-01 e EC-02 nesta branch como segundo incremento, mantendo
+o mínimo como base e a rastreabilidade SDD integral.
 
 ### II. Ecossistema intocado e interfaces públicas
 
@@ -110,6 +118,17 @@ substituir o programa aberto. Tipos de variáveis, operadores aceitos e o
 contrato de entrada/saída do parser DEVEM ser fixados no `plan` a partir da
 documentação da versão fixada.
 
+O carregamento de missões (EC-01) DEVE aceitar o schema JSON público do
+meuPiá Desafios sem exigir campo proprietário para funcionar. Quando o schema
+oficial não trouxer uma lista explícita de blocos, a derivação do conjunto
+permitido DEVE ser determinística, documentada no `plan` e testada com pelo
+menos duas missões de conjuntos diferentes; sem missão, a toolbox DEVE
+permanecer completa. Blocos de módulo (EC-02) DEVEM gerar Portugol compatível
+com a diretiva pública `usar "<módulo>"` da versão fixada. Se a interface
+pública do módulo estiver ausente ou insuficientemente documentada, aplicam-se
+o princípio II e a RT-03 (registro da lacuna + adaptador local), sem copiar,
+reimplementar ou alterar o módulo.
+
 **Versão fixada (substituta):** a tag original da turma para o meuPiá Core e
 módulos **não pôde ser confirmada** (Q-01 em `docs/requisitos.md`). A dupla
 fixou `meuPia/core v1.4.1`, commit
@@ -165,4 +184,4 @@ com os gates desta constitution. Complexidade adicional DEVE ser justificada no
 desenvolvimento, usar os artefatos versionados em `.specify/` e o
 `CONTRIBUTING.md`.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-23 | **Last Amended**: 2026-11-23
+**Version**: 1.1.0 | **Ratified**: 2026-11-23 | **Last Amended**: 2026-11-23

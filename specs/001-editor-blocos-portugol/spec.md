@@ -224,6 +224,83 @@ uma sessão nova e executar novamente com entrada `3`, conferindo a saída `6`.
 
 ---
 
+### User Story 9 — Missão que escolhe os blocos da toolbox (Priority: P2)
+
+O estudante carrega uma missão do meuPiá Desafios e a área "Blocos" passa a
+mostrar somente os blocos necessários àquela missão. Duas missões diferentes
+podem oferecer conjuntos diferentes, e um bloco que a missão não pede não é
+oferecido. Ao sair da missão, a toolbox volta ao conjunto completo.
+
+**Por que esta prioridade**: é o segundo incremento aprovado pela dupla depois
+de o fluxo mínimo ter passado nos gates; transforma o editor de uma ferramenta
+genérica em um ponto de entrada para as missões do ecossistema, sem atrapalhar
+quem apenas quer montar um programa livre.
+
+**Teste independente**: carregar duas missões de conjuntos diferentes, conferir
+os blocos presentes e ausentes em cada uma e, em seguida, conferir que sem
+missão todos os blocos do catálogo continuam disponíveis.
+
+**Cenários de aceitação**:
+
+1. **Dado** uma missão carregada no formato público do meuPiá Desafios,
+   **Quando** a missão é aplicada, **Então** a toolbox exibe somente os blocos
+   necessários às construções presentes no código inicial e na descrição da
+   missão, e o título da missão fica visível para o estudante.
+2. **Dado** a missão oficial "O Taxímetro" (`calculo_gn_taximetro`), cujo código
+   inicial declara variável e escreve uma soma, **Quando** a toolbox é montada,
+   **Então** aparecem `declarar`, `escreva` e `op_soma`, e não aparecem
+   `atribuir`, `se`, `enquanto`, `para` nem `leia`.
+3. **Dado** a missão oficial "A Fila VIP" (`fila_prioridade_simples`), cuja
+   descrição pede `SE / SENAO` e cujo código inicial usa `<-`, **Quando** essa
+   missão é carregada, **Então** a toolbox troca para o conjunto da segunda
+   missão: `atribuir` e `se` aparecem e `op_soma` da missão anterior não aparece,
+   provando que as duas missões filtram de forma distinta.
+4. **Dado** um bloco de uma missão anterior ainda no programa, **Quando** outra
+   missão é carregada, **Então** o estudante recebe aviso em pt-BR e o programa
+   aberto não é apagado sem confirmação.
+5. **Dado** que nenhuma missão está carregada, **Quando** o editor abre, **Então**
+   a toolbox mostra o catálogo completo usado no escopo mínimo e o exemplo
+   `3 → 6` continua executável.
+6. **Dado** uma missão inválida ou em formato desconhecido, **Quando** o
+   estudante tenta carregá-la, **Então** a missão é recusada com mensagem em
+   pt-BR, a toolbox e o programa atuais permanecem intactos.
+
+---
+
+### User Story 10 — Blocos de módulo executáveis no Core (Priority: P2)
+
+O estudante encontra na toolbox blocos de um módulo do ecossistema meuPiá. Ao
+usá-los, o Portugol gerado contém a forma pública de usar esse módulo e uma
+chamada documentada, de modo que o programa seja aceito pelo Core real e
+produza um efeito verificável na saída.
+
+**Por que esta prioridade**: mostra que o editor não serve apenas ao Portugol
+básico: ele fala a linguagem dos módulos oficiais pelo contrato público, sem
+copiar ou modificar o módulo.
+
+**Teste independente**: montar a missão de exemplo com bloco de módulo, gerar o
+Portugol, executá-lo no Core fixado e conferir a saída esperada; conferir
+também que nenhum arquivo do módulo foi copiado para este repositório.
+
+**Cenários de aceitação**:
+
+1. **Dado** o módulo escolhido e documentado no planejamento, **Quando** o
+   estudante encaixa um bloco desse módulo, **Então** o painel "Portugol gerado"
+   passa a conter a diretiva pública de uso do módulo e a chamada documentada,
+   com argumentos preenchidos pelo estudante.
+2. **Dado** um programa de exemplo com o bloco de módulo, **Quando** o Core real
+   `v1.4.1` o recebe, **Então** o parser aceita o código e a execução produz na
+   saída o efeito verificável descrito na missão de exemplo.
+3. **Dado** um bloco de módulo com argumento incompleto, **Quando** o estudante
+   tenta executar, **Então** a interface apresenta mensagem em pt-BR e o
+   programa aberto permanece intacto.
+4. **Dado** que a interface pública necessária ao módulo não existe ou não está
+   documentada na versão fixada, **Quando** o impedimento é constatado,
+   **Então** a lacuna é registrada com fonte e data, e a integração é resolvida
+   por adaptador neste repositório, sem alterar o Core nem o módulo.
+
+---
+
 ### Edge Cases
 
 - Arquivo JSON sem versão, com versão diferente da aceita ou com blocos
@@ -294,6 +371,33 @@ uma sessão nova e executar novamente com entrada `3`, conferindo a saída `6`.
   verticais rastreáveis até a spec.
 - **FR-023** (RF-24): A entrega final DEVE prever demonstração ao vivo de até
   10 minutos, sem código nos slides.
+- **FR-024** (EC-01, Q-08): O editor DEVE carregar missões no formato JSON
+  público do meuPiá Desafios, aceitando `id`, `titulo`, `descricao` (ou
+  `instrucoes`), `codigoInicial` e `codigoTeste`, e ignorando campos extras
+  como `mapa`.
+- **FR-025** (EC-01): O conjunto de blocos oferecido na toolbox DEVE ser
+  derivado de forma determinística do código inicial e da descrição da missão,
+  porque o schema oficial não traz lista explícita de blocos.
+- **FR-026** (EC-01): Duas missões com construções diferentes DEVEM produzir
+  toolboxes diferentes, e um bloco não exigido pela missão NÃO DEVE aparecer.
+- **FR-027** (EC-01, RT-06): Sem missão carregada, a toolbox DEVE continuar
+  exibindo o catálogo completo do escopo mínimo, com o exemplo `3 → 6`
+  preservado.
+- **FR-028** (EC-01): Uma missão inválida ou em formato desconhecido DEVE ser
+  recusada em pt-BR sem alterar a toolbox nem o programa aberto.
+- **FR-029** (EC-02, Q-07): O editor DEVE oferecer blocos do módulo Grid por
+  meio da diretiva pública `usar "grid"` e das funções públicas
+  `grid_iniciar` e `grid_visitar`, documentadas nas missões oficiais do
+  Desafios e na interface do plugin.
+- **FR-030** (EC-02): O Portugol gerado com blocos de módulo DEVE conter a
+  diretiva `usar "grid"` logo após o cabeçalho e as chamadas das funções
+  escolhidas, sem duplicar a diretiva.
+- **FR-031** (EC-02, RF-17): Um programa de exemplo com bloco de módulo DEVE
+  ser aceito pelo parser real do Core fixado e produzir saída verificável na
+  execução real.
+- **FR-032** (EC-02, RT-03): Nenhum código do Core ou do módulo Grid DEVE ser
+  copiado para este repositório; a lacuna de documentação do README do Grid
+  DEVE ser registrada com fonte e data, e a integração resolvida no adaptador.
 
 ### Entidades principais *(incluir se a funcionalidade envolver dados)*
 
@@ -301,7 +405,13 @@ uma sessão nova e executar novamente com entrada `3`, conferindo a saída `6`.
   versão, título, sequência de blocos e a entrada usada na demonstração.
 - **Bloco**: unidade montável com tipo, parâmetros preenchidos e ligações com
   outros blocos; exemplos: `leia`, `atribuir`, `escreva`, `se`, `enquanto`,
-  `para` e operadores.
+  `para`, operadores e blocos de módulo (`usar_grid`, `grid_iniciar`,
+  `grid_visitar`).
+- **Missão do Desafios**: arquivo JSON público com `id`, `título`, descrição,
+  código inicial e código de teste; a partir dele o editor obtém os blocos
+  permitidos e o texto apresentado ao estudante.
+- **Conjunto de blocos permitidos**: lista determinística de tipos de bloco
+  derivada da missão; quando não há missão, é o catálogo completo.
 - **Portugol gerado**: texto resultante do programa em blocos, observável no
   painel e submetido ao Core na execução.
 - **Saída da execução**: texto produzido pelo Core, incluindo mensagens de erro
@@ -342,8 +452,12 @@ uma sessão nova e executar novamente com entrada `3`, conferindo a saída `6`.
 | RT-03 | FR-004 |
 | RT-04 | FR-016 |
 | RT-05 | Etapa anterior encerrada; sem efeito nesta spec |
-| RT-06 | US1 a US8; escopo completo (EC-01, EC-02) e bônus (BX-01) fora |
+| RT-06 | US1 a US10; mínimo preservado e EC-01/EC-02 incluídos como segundo incremento; BX-01 fora |
 | RT-07 | FR-021, FR-022, constitution |
+| EC-01 | US9 / FR-024 a FR-028 / SC-009 a SC-011 |
+| EC-02 | US10 / FR-029 a FR-032 / SC-012 |
+| Q-07 | US10 / FR-029 / `plan.md` e `research.md` (módulo Grid) |
+| Q-08 | US9 / FR-024 / `plan.md` e `research.md` (schema do Desafios) |
 
 ## Critérios de sucesso *(obrigatório)*
 
@@ -366,6 +480,15 @@ uma sessão nova e executar novamente com entrada `3`, conferindo a saída `6`.
   nos slides.
 - **SC-008**: Em um teste com cinco estudantes iniciantes, pelo menos quatro
   concluem o fluxo "montar blocos → ver Portugol → executar" sem ajuda.
+- **SC-009**: 100% das missões de teste são carregadas sem erro e produzem o
+  mesmo conjunto de blocos em execuções repetidas (derivação determinística).
+- **SC-010**: Nas duas missões de conjuntos diferentes, 0 blocos não exigidos
+  pela missão aparecem na toolbox filtrada.
+- **SC-011**: Sem missão carregada, 100% dos blocos do catálogo do escopo
+  mínimo continuam disponíveis e o exemplo `3 → 6` continua produzindo `6`.
+- **SC-012**: 100% das execuções de aceite do programa de módulo Grid são
+  aceitas pelo parser real do Core `v1.4.1` e produzem a saída verificável
+  esperada, sem copiar código do módulo para este repositório.
 
 ## Premissas
 
@@ -387,7 +510,15 @@ uma sessão nova e executar novamente com entrada `3`, conferindo a saída `6`.
   linha e espaços; a regra definitiva fica para o planejamento.
 - A stack inicial já está registrada na constitution; esta spec não fixa
   bibliotecas, arquitetura nem integrações técnicas.
-- Escopo completo (`EC-01`, `EC-02`) e bônus (`BX-01`) estão fora desta entrega.
+- Os itens `EC-01` e `EC-02` entram nesta branch como segundo incremento,
+  aprovado depois de o escopo mínimo passar nos gates (emenda 1.1.0 da
+  constitution). O bônus `BX-01` continua fora.
+- O schema oficial do Desafios não traz lista de blocos; por premissa, a
+  derivação usa apenas construções presentes no código inicial e na descrição,
+  e o catálogo da toolbox limita a oferta aos blocos implementados pelo editor.
+- O módulo Grid é usado somente pelas funções públicas documentadas nas missões
+  oficiais e pela diretiva `usar "grid"` da versão fixada; o README do repositório
+  do Grid está vazio, lacuna registrada como pendência documental (RT-03).
 
 **Dúvidas de comportamento ainda abertas (registradas, sem bloquear a spec):**
 

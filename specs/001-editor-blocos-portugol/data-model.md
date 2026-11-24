@@ -64,6 +64,47 @@ Retorno do runner para o editor (RF-05, RF-17).
 | `duracaoMs` | inteiro | Tempo decorrido; usado para verificar o limite de 5 s. |
 | `interrompidoPorLimite` | booleano | Verdadeiro somente no status `limite`. |
 
+### Missão do Desafios (`MissaoJSON`) — EC-01
+
+Artefato JSON público consumido pelo editor (FR-024).
+
+| Campo | Tipo | Obrigatório | Regra |
+| --- | --- | --- | --- |
+| `id` | texto | sim | Identificador sem espaços; usado no seletor da interface. |
+| `titulo` | texto | sim | Exibido ao estudante quando a missão está ativa. |
+| `descricao` | texto | sim* | Texto em Markdown; `instrucoes` é aceito como apelido. |
+| `codigoInicial` | texto | sim | Fonte das construções usadas na derivação dos blocos. |
+| `codigoTeste` | texto | sim | Metadado do Desafios; não é executado pelo editor. |
+| `mapa` | objeto | não | Campo extra de missões de grid; ignorado (R8). |
+
+\* Um dos dois (`descricao` ou `instrucoes`) deve estar presente.
+
+### Conjunto de blocos permitidos (`BlocosPermitidos`) — EC-01
+
+| Campo | Tipo | Regra |
+| --- | --- | --- |
+| `missaoId` | texto ou nulo | `null` representa "sem missão", isto é, catálogo completo. |
+| `tipos` | lista de texto | Subconjunto do catálogo do editor, em ordem canônica; pode ser vazia somente se a missão não usar construções conhecidas. |
+
+Derivação determinística: `codigoInicial` + `descricao` → remoção de comentários
+`//` e literais entre aspas → mapeamento de construções para tipos de bloco →
+interseção com o catálogo → ordenação pela toolbox. Nenhum campo
+`blocosPermitidos` é lido do arquivo da missão (D-07).
+
+### Blocos de módulo (`BlocoModulo`) — EC-02
+
+Extensão de `BlocoSerializado` para o módulo Grid.
+
+| `tipo` | Campos | Portugol gerado |
+| --- | --- | --- |
+| `usar_grid` | nenhum | `usar "grid"` (uma vez, logo após `algoritmo`) |
+| `grid_iniciar` | `largura`, `altura` (inteiros) | `grid_iniciar(largura, altura)` |
+| `grid_visitar` | `x`, `y`, `passo` (inteiros) | `grid_visitar(x, y, passo)` |
+
+A diretiva é deduzida da presença de `usar_grid`; blocos de módulo sem esse
+tipo não devem ser oferecidos, e a geração não duplica a diretiva quando há
+mais de um bloco de módulo.
+
 ## Regras de validação
 
 - `versao` diferente de `1` ⇒ recusar com "Versão de projeto incompatível."
@@ -77,6 +118,10 @@ Retorno do runner para o editor (RF-05, RF-17).
 - `titulo` vazio ou maior que 80 caracteres ⇒ recusar com mensagem em pt-BR.
 - JSON sintaticamente inválido ⇒ recusar com "O arquivo não contém um JSON
   válido." sem tocar no programa aberto.
+- Missão sem `id`, sem `titulo`, sem texto de descrição ou sem `codigoInicial`
+  ⇒ recusar em pt-BR sem trocar a toolbox nem o programa aberto (FR-028).
+- Bloco de módulo com coordenada, passo ou dimensão não inteira ⇒ recusar em
+  pt-BR antes da geração (US10, cenário 3).
 - Nenhuma validação pode apagar `projetoAnterior` antes de a carga ser aceita.
 
 ## Transições de estado

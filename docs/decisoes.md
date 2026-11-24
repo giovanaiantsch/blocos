@@ -142,3 +142,70 @@ npm run test:acceptance
 `npm run test:core-real` imprime o Portugol gerado, o `ResultadoDaExecucao` e a
 linha `ACEITE REAL: OK (entrada 3 -> saída 6)`. O teste em
 `tests/acceptance/dobrar-entrada.test.js` usa o Core real, sem mock.
+
+## D-07 — Formato e derivação das missões do Desafios (EC-01, Q-08)
+
+Fonte consultada em 2026-11-23:
+https://raw.githubusercontent.com/meuPia/desafios/main/README.md e os 14
+arquivos `.json` listados por
+`https://api.github.com/repos/meuPia/desafios/git/trees/main?recursive=1`.
+
+O README documenta `id`, `titulo`, `instrucoes` e `codigoTeste`, mas **todos**
+os arquivos reais usam `descricao` e `codigoInicial` (três também trazem
+`mapa`). Nenhum traz lista de blocos, ferramentas ou categorias. Decisão:
+
+- O loader aceita `id`, `titulo`, `descricao` (ou `instrucoes` como apelido),
+  `codigoInicial` e `codigoTeste`, e ignora `mapa` e outros campos extras.
+- A derivação do conjunto permitido lê `codigoInicial` e `descricao`, remove
+  comentários `//` e literais de texto, e mapeia construções para os tipos de
+  bloco do catálogo do editor em ordem canônica (a ordem do arquivo não altera
+  o resultado).
+- Missões usadas no teste de filtros: `calculo_gn_taximetro` (deriva
+  `declarar`, `escreva`, `op_soma`) e `fila_prioridade_simples` (deriva
+  `declarar`, `atribuir`, `escreva`, `se`, ambos do código e da descrição).
+- Sem missão, a toolbox completa do escopo mínimo é preservada (RT-06).
+
+## D-08 — Módulo escolhido para EC-02 (Q-07)
+
+O README de `meuPia/grid` contém apenas `# grid` (6 bytes): não há API
+documentada lá. Ainda assim, as missões oficiais
+`a_estrela_manhattan.json`, `entregador_pizza.json` e `fuga_labirinto.json`
+documentam o uso público `usar "grid"` com `grid_olhar(x, y)`,
+`grid_visitar(x, y, passo)` e `grid_chegou_objetivo(x, y)`; o Core `v1.4.1`
+registra `grid` em `PLUGIN_IMPORT_MAP`
+(`from meupia_grid.plugin_grid import *`). Essa é a interface pública
+considerada. A lacuna do README é registrada como pendência documental
+(RT-03), sem issue publicada nesta entrega porque nenhum push foi feito.
+
+Alternativas avaliadas:
+
+| Módulo | Motivo da não escolha |
+| --- | --- |
+| Maker | README com sintaxe antiga (`fimenquanto`, `fimalgoritmo`), comando `mpm install` obsoleto, `iot_ler` documentado mas não implementado e pacote em `maker/` enquanto o Core espera `meupia_maker`. |
+| IA | Interface documentada e instalável (`mpgp instale ia`), porém a primeira execução com scikit-learn levou ~38 s no ambiente de aceite, incompatível com o limite de 5 s do runner; a chamada `ia_treinar(0.0)` também falha nas versões atuais do scikit-learn. |
+
+Evidência real com Grid (`mpgp instale grid`, commit
+`3ae471fff99c7a7aa6d3da254db660f1756bc9f1`, `meupia-grid==1.0.2`):
+
+```portugol
+algoritmo "Grid do Iniciante"
+usar "grid"
+
+inicio
+    grid_iniciar(3, 3)
+    grid_visitar(2, 3, 1)
+    escreva("celula visitada")
+fim_algoritmo
+```
+
+Compilação em 338 ms com `[COMPILED SUCCESSFULLY]` e execução em 193 ms com:
+
+```text
+[Mock Grid] Grid inicializado com tamanho 3x3
+[Mock Grid] Célula (2, 3) visitada no passo 1
+celula visitada
+```
+
+As linhas `[Mock Grid]` são o comportamento do plugin fora do navegador; o
+Core e o plugin executados são os reais, sem mock no editor. Nenhum arquivo do
+Core ou do módulo foi copiado para este repositório (RT-02).

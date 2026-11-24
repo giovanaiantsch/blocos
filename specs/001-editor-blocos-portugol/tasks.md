@@ -6,11 +6,11 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 
 **Entrada**: documentos de design em `/specs/001-editor-blocos-portugol/`
 
-**Pré-requisitos**: `plan.md` (obrigatório), `spec.md` (obrigatório), `research.md`, `data-model.md`, `contracts/`
+**Pré-requisitos**: `plan.md` (obrigatório), `spec.md` (obrigatório), `research.md`, `data-model.md`, `contracts/` (inclusive `mission-json.md` e `module-grid.md`, emenda 1.1.0 da constitution)
 
 **Testes**: incluídos porque a spec exige RF-17 e o usuário solicitou aceitação ponta a ponta, Vitest, cobertura mínima de 80% e métricas reais.
 
-**Organização**: tarefas agrupadas por história de usuário, com um fluxo vertical de MVP primeiro, conforme pedido: JSON → Portugol → parser real → execução com entrada `3` → saída `6`. Depois vêm três painéis, geração em tempo real, blocos obrigatórios e persistência.
+**Organização**: tarefas agrupadas por história de usuário, com um fluxo vertical de MVP primeiro, conforme pedido: JSON → Portugol → parser real → execução com entrada `3` → saída `6`. Depois vêm três painéis, geração em tempo real, blocos obrigatórios, persistência e, como segundo incremento (T043–T054), EC-01 e EC-02.
 
 ## Resumo da integração com o Core
 
@@ -22,7 +22,7 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 ## Formato: `[ID] [P?] [Story] Descrição`
 
 - **[P]**: pode rodar em paralelo (arquivos diferentes, sem dependência de tarefa incompleta).
-- **[Story]**: usado apenas nas fases de história de usuário; mapeado para US1–US8 da spec.
+- **[Story]**: usado apenas nas fases de história de usuário; mapeado para US1–US10 da spec.
 - Toda tarefa traz requisitos atendidos, dependências e verificação de conclusão na própria descrição.
 
 ## Convenção de commit e PR
@@ -201,7 +201,30 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 - [ ] T042 Rodar o `quickstart.md` completo e registrar o resultado em `docs/verificacao-final.md`, incluindo os cinco gates da constitution e a confirmação de que a aceitação usou o Core real; atende RF-17/RF-19/RF-20/RF-24/RT-07; depende: T036/T037/T039/T040/T041; verificação: checklist final em `docs/verificacao-final.md` está integralmente marcado e sem pendência de tag aberta.
   - Nota de 2026-11-23: `docs/verificacao-final.md` foi atualizado com números medidos, escopo da cobertura, verificação no Blockly real, o erro ENOENT anterior, o aceite `3 → 6`, a verificação de navegador de `se/senão`, `enquanto`, `para`, salvar/reabrir/reexecutar, a reexecução `4 → 8` e o combinado com entradas `5` e `2`. Permanece pendente enquanto T006/T007/T036 não forem concluídos e a tag original não for confirmada; T040 já foi entregue em `docs/demo.md`.
 
-**Checkpoint**: entrega pronta para revisão de conformidade com a constitution.
+**Checkpoint**: escopo mínimo pronto para revisão de conformidade com a constitution; os gates passaram antes do segundo incremento (emenda 1.1.0).
+
+---
+
+## Phase 12: Segundo incremento — EC-01 e EC-02 (P2)
+
+**Objetivo**: acrescentar missões que filtrem a toolbox e blocos do módulo Grid sem regressar o fluxo mínimo `3 → 6`. Toda especificação, planejamento, contrato e modelo de dados desta fase foi atualizada **antes** destas tarefas e antes de qualquer código (emenda 1.1.0 da constitution).
+
+**Teste independente**: T047 prova duas missões com conjuntos diferentes; T052 executa o programa de módulo no Core real. T053 repete `npm test`, `npm run coverage` e o exemplo `3 → 6`.
+
+- [ ] T043 [P] [US9] Versionar `public/missoes/calculo_gn_taximetro.json`, `public/missoes/fila_prioridade_simples.json` e `public/missoes/grid-visitar.json` no schema real do Desafios (`id`, `titulo`, `descricao`, `codigoInicial`, `codigoTeste`), preservando o conteúdo das duas missões oficiais e marcando a de grid como exemplo local; atende EC-01/FR-024/Q-08/RT-04; depende: `contracts/mission-json.md`; verificação: os três arquivos são JSON válidos e a derivação de T045 produz conjuntos distintos para os dois primeiros.
+- [ ] T044 [P] [US9] Criar `tests/unit/missoes-schema.test.js` e implementar `src/missoes/schema.js` com `validarMissao`, aceitando `instrucoes` como apelido de `descricao`, ignorando `mapa`, recusando campos obrigatórios ausentes e não alterando a missão anterior em caso de recusa; atende EC-01/FR-024/FR-028/RT-04; depende: T043; verificação: `npx vitest run tests/unit/missoes-schema.test.js` passa e a mensagem de recusa é a do contrato.
+- [ ] T045 [US9] Criar `tests/unit/missoes-derivar.test.js` e implementar `src/missoes/derivar.js` com derivação determinística (limpeza de comentários, literais e Markdown; operadores apenas do código; detecção de `usar "grid"` no original; interseção com o catálogo e ordem canônica); atende EC-01/FR-025/SC-009/RT-04; depende: T043; verificação: a mesma missão repetida 10 vezes devolve a mesma lista e as construções não implementadas são ignoradas.
+- [ ] T046 [US9] Criar `tests/unit/toolbox-missao.test.js` e implementar `src/blocks/toolboxParaMissao.js` filtrando `src/blocks/toolbox.js` e a categoria de módulo, removendo categorias vazias e devolvendo a toolbox completa quando não há missão; atende EC-01/FR-025/FR-026/FR-027/SC-011; depende: T045; verificação: nenhuma categoria vazia aparece e sem missão o resultado é idêntico a `TOOLBOX`.
+- [ ] T047 [US9] Criar `tests/integration/missao-toolbox.test.js` carregando `calculo_gn_taximetro` e `fila_prioridade_simples`, conferindo os blocos presentes e, explicitamente, que `atribuir`/`se` não aparecem na primeira e `op_soma` não aparece na segunda; atende EC-01/FR-026/SC-010/RT-07; depende: T043–T046; verificação: `npx vitest run tests/integration/missao-toolbox.test.js` passa e o teste falharia se o filtro fosse o mesmo para as duas missões.
+- [ ] T048 [US9] Implementar a seleção de missão em `index.html`, `src/ui/layout.js` e `src/ui/main.js`: seletor das três missões versionadas, arquivo local opcional, texto da missão, aplicação via `workspace.updateToolbox(...)` e confirmação antes de trocar um programa com blocos incompatíveis; atende EC-01/FR-024/FR-028/RT-04/SC-011; depende: T044/T046/T047; verificação: trocar de missão muda a toolbox, recusar missão inválida mantém toolbox e programa, e "Missão livre" restaura o catálogo completo com `3 → 6` executável.
+- [ ] T049 [P] [US10] Criar `tests/unit/modulo-grid.test.js` e implementar `src/blocks/modulo-grid.js` com as definições `usar_grid`, `grid_iniciar` e `grid_visitar`, serialização/restauração de inteiros e registro em `src/blocks/registro.js`; atende EC-02/FR-029/RT-02/RT-04; depende: `contracts/module-grid.md`; verificação: `npx vitest run tests/unit/modulo-grid.test.js` passa e nenhum arquivo do plugin é importado.
+- [ ] T050 [US10] Estender `src/persistence/schema.js`, `src/generation/gerador.js` e `src/generation/sintaxe.js` para os três tipos de bloco, validando inteiros e emitindo `usar "grid"` uma única vez logo após o cabeçalho; atende EC-02/FR-029/FR-030/FR-032/RT-04; depende: T049; verificação: `npx vitest run tests/unit/modulo-grid.test.js` cobre programa sem diretiva, com um e com vários blocos de módulo.
+- [ ] T051 [US10] Criar `tests/fixtures/grid-visitar.json` exatamente como `contracts/module-grid.md` e conferir que o gerador produz o Portugol canônico; atende EC-02/FR-031/RT-04; depende: T050; verificação: o JSON é válido, passa em `validarProjeto` e o texto gerado contém `usar "grid"`, `grid_iniciar(3, 3)` e `grid_visitar(2, 3, 1)`.
+- [ ] T052 [US10] Criar `tests/acceptance/modulo-grid.test.js` com o Core real `v1.4.1` e o plugin instalado via `mpgp instale grid`, exigindo `[COMPILED SUCCESSFULLY]` e a saída `celula visitada`, sem mock e sem copiar código do plugin; atende EC-02/FR-031/SC-012/RT-02; depende: T051; verificação: `npm run test:acceptance` passa com 2 arquivos e registra duração e saída em `docs/verificacao-final.md`.
+- [ ] T053 Atualizar `vitest.config.js` para incluir `src/missoes/**` e `src/blocks/**` na cobertura, rodar `npm test`, `npm run coverage` e repetir no navegador o exemplo `3 → 6` com a toolbox completa; atende RF-19/FR-027/SC-005/SC-011; depende: T043–T052; verificação: `coverage/coverage-summary.json` é regenerado, `npm test` passa sem falhas e `3 → 6` volta a ser medido com o Core real.
+- [ ] T054 Atualizar `README.md`, `docs/demo.md`, `docs/verificacao-final.md` e `docs/decisoes.md` com as duas missões, o módulo Grid, as métricas reais de T053, o roteiro acrescido e a ressalva da tag; atende RF-20/RF-24/RT-03/RT-07/Q-07/Q-08; depende: T053; verificação: os números do README e da verificação final são idênticos ao resumo gerado e nenhum push é feito.
+
+**Checkpoint**: segundo incremento entregue; mínimo preservado e rastreabilidade EC-01/EC-02/Q-07/Q-08 fechada em commits locais.
 
 ---
 
@@ -219,7 +242,8 @@ description: "Lista de tarefas para implementação do editor de blocos com Port
 - **Phase 8 (US6)**: depende de T007 e do gerador.
 - **Phase 9 (US7)**: depende de T007, gerador e runner.
 - **Phase 10 (US8)**: depende de T016/T021/T023 e da aceitação de US3 para a reabertura real.
-- **Phase 11 (polimento)**: depende de todas as histórias desejadas.
+- **Phase 11 (polimento)**: depende de todas as histórias do escopo mínimo e registra os gates que autorizaram a emenda 1.1.0.
+- **Phase 12 (EC-01/EC-02)**: depende de Phase 11 e dos contratos `mission-json.md` e `module-grid.md`; implementa US9 e US10 sem tocar no núcleo já aceito, exceto pelas extensões pontuais de schema/gerador em T050.
 
 ### Ordem das histórias
 
@@ -233,6 +257,8 @@ Ordem adotada a pedido do usuário, com a spec como fonte de requisitos:
 6. **US6 (P2)** — `se`/`senão`.
 7. **US7 (P2)** — `enquanto`/`para`.
 8. **US8 (P1)** — salvar/carregar, movido para depois dos blocos conforme solicitação explícita.
+9. **US9 (P2)** — missões do Desafios filtrando a toolbox (EC-01).
+10. **US10 (P2)** — blocos do módulo Grid executáveis no Core (EC-02).
 
 ### Separação por disponibilidade da versão fixada
 
@@ -288,8 +314,11 @@ Aguardando a dupla/professor:
 3. US5 → exemplo canônico pela interface.
 4. US4, US6 e US7 → blocos obrigatórios completos.
 5. US8 → persistência completa e reabertura.
-6. Polimento → cobertura, README, demo e auditoria de commits.
+6. Polimento → cobertura, README, demo e auditoria de commits; gates que autorizam a emenda 1.1.0.
+7. EC-01 → missões oficiais, derivação determinística, filtro da toolbox e seletor na interface.
+8. EC-02 → blocos Grid, diretiva `usar "grid"`, fixture e aceite no Core real.
+9. Verificação final → cobertura regenerada, `3 → 6` repetido e documentação atualizada.
 
 ### Validação do formato
 
-Todas as 42 tarefas seguem o padrão obrigatório `- [ ] [ID] [P?] [Story] descrição com caminho de arquivo`: checkbox presente, IDs sequenciais de T001 a T042, `[Story]` somente nas fases de história, `[P]` apenas quando não há dependência pendente, e pelo menos um caminho de arquivo por tarefa.
+Todas as 54 tarefas seguem o padrão obrigatório `- [ ] [ID] [P?] [Story] descrição com caminho de arquivo`: checkbox presente, IDs sequenciais de T001 a T054, `[Story]` somente nas fases de história, `[P]` apenas quando não há dependência pendente, e pelo menos um caminho de arquivo por tarefa.

@@ -6,15 +6,17 @@
 
 ## Resumo
 
-Entregar, em pt-BR, o escopo mínimo da PoC: um editor web com três painéis
-(blocos, Portugol gerado e saída), geração automática de Portugol a partir dos
-blocos, persistência em JSON e execução do código gerado no meuPiá Core real.
-A stack inicial é **Blockly** para a área visual e **JavaScript** para o editor,
-gerador, persistência e runner local. O Core é consumido somente pela interface
-pública documentada: o comando `meupia <arquivo.por>`, que executa as etapas
-léxica, sintática e semântica e gera um arquivo Python em `output/`; a execução
-ocorre com `python output/<nome>.py` (ver [research.md](./research.md)).
-Nenhum código do Core ou de módulos é alterado (RT-02).
+Entregar, em pt-BR, o escopo mínimo da PoC e, como segundo incremento aprovado
+pela dupla em 2026-11-23, os itens EC-01 (toolbox por missão) e EC-02 (blocos
+do módulo Grid). O editor web mantém três painéis (blocos, Portugol gerado e
+saída), geração automática de Portugol a partir dos blocos, persistência em JSON
+e execução do código gerado no meuPiá Core real. A stack inicial é **Blockly**
+para a área visual e **JavaScript** para o editor, gerador, persistência e
+runner local. O Core é consumido somente pela interface pública documentada: o
+comando `meupia <arquivo.por>`, que executa as etapas léxica, sintática e
+semântica e gera um arquivo Python em `output/`; a execução ocorre com
+`python output/<nome>.py` (ver [research.md](./research.md)). Nenhum código do
+Core ou de módulos é alterado (RT-02).
 
 A tag original da turma **não pôde ser confirmada** (RT-01/Q-01). Como
 substituto, a dupla fixou **`meuPia/core v1.4.1`**, commit
@@ -54,8 +56,9 @@ Core; Core e módulos intocados; todo texto em pt-BR; cobertura mínima de 80%
 sobre gerador, adaptador e persistência, com relatório versionado em
 `coverage/`; `README.md` com métricas reais no topo.
 
-**Escala/escopo**: somente RF-01 a RF-24. Um estudante por sessão, um projeto
-aberto por vez. `EC-01`, `EC-02` e `BX-01` ficam fora.
+**Escala/escopo**: RF-01 a RF-24 como base, mais EC-01 e EC-02 como segundo
+incremento (emenda 1.1.0 da constitution). `BX-01` fica fora. Um estudante por
+sessão, um projeto aberto por vez e no máximo uma missão aplicada por vez.
 
 **Esclarecimentos**: nenhum marcador `NEEDS CLARIFICATION` permanece. A tag
 original da turma não pôde ser confirmada; a versão substituta fixada pela
@@ -74,6 +77,8 @@ dependência externa conhecida, não como dúvida de escopo.
 | `leia` consome stdin na ordem esperada | Entrada `3` gerou saída `6` (teste real, sem mock) |
 | Idioma dos erros de runtime | Parcial: erro de CLI observado em pt-BR ("Arquivo ... não encontrado."); catálogo de mensagens do Core permanece pendente (T019) |
 | Licença e versão do Blockly | `blockly@12.5.1`, Apache-2.0 (D-01) |
+| Schema das missões do Desafios (EC-01) | `id`, `titulo`, `descricao`, `codigoInicial`, `codigoTeste` nos arquivos reais; `instrucoes` só no README; sem lista de blocos (R8/D-07) |
+| Diretiva e funções públicas do Grid (EC-02) | `usar "grid"` documentado no Guia `v1.4.1` e nas missões oficiais; `mpgp instale grid` instalou `meupia-grid==1.0.2`; compilação 338 ms, execução 193 ms e três linhas de saída medidas (R9/D-08) |
 
 Comando de reprodução do aceite real: ver `README.md` e
 `docs/verificacao-final.md`. Nenhum mock é usado em `tests/acceptance/`.
@@ -84,7 +89,7 @@ Comando de reprodução do aceite real: ver `README.md` e
 
 | Princípio / porta | Situação | Evidência neste plano |
 | --- | --- | --- |
-| I. Escopo mínimo primeiro | PASSA | Somente RF-01 a RF-24; EC/BX fora (Contexto técnico). |
+| I. Escopo mínimo primeiro, depois escopo completo | PASSA | Mínimo entregue e medido antes do segundo incremento; EC-01/EC-02 especificados e planejados antes do código; BX fora (Contexto técnico e emenda 1.1.0). |
 | II. Ecossistema intocado | PASSA | Core consumido por CLI documentada; nada é modificado (contracts/core-runner.md). |
 | III. Spec antes do código e rastreabilidade | PASSA | Spec existente; matriz de IDs no fim deste arquivo; nenhum código criado. |
 | IV. Aceitação com Core real e cobertura ≥80% | PASSA | Testes a partir de JSON, parser e execução reais; Vitest com `coverage/` versionado. |
@@ -93,7 +98,54 @@ Comando de reprodução do aceite real: ver `README.md` e
 | Versão do Core fixada | PASSA | `meuPia/core v1.4.1` @ `68824d7f9e91f71670f3f466c0a5865a8685f020`; tag original da turma não confirmada, registrada como ressalva. |
 
 Reavaliação após a Fase 1: nenhuma violação introduzida pelos contratos, pelo
-modelo de dados ou pelo guia de validação.
+modelo de dados ou pelo guia de validação. Reavaliação após a emenda 1.1.0:
+EC-01 e EC-02 preservam o princípio II (apenas interfaces públicas), o
+princípio IV (aceitação com Core real) e o princípio V (pt-BR); a derivação de
+blocos é determinística e a toolbox sem missão permanece completa.
+
+## Arquitetura do segundo incremento
+
+### EC-01 — Missões e filtro da toolbox
+
+```text
+public/missoes/*.json  (cópias locais no schema oficial do Desafios)
+   └─ src/missoes/schema.js      valida id/titulo/descricao/codigoInicial/codigoTeste
+        └─ src/missoes/derivar.js  codigoInicial + descricao → tipos de bloco permitidos
+             └─ src/blocks/toolboxParaMissao.js  filtra TOOLBOX mantendo a ordem das categorias
+                  └─ src/ui/main.js  Blockly.updateToolbox(...) ao trocar de missão
+```
+
+Regras de derivação (R8/D-07): remover comentários `//` e literais entre aspas;
+procurar `leia(`, `escreva(`, `var`/`: tipo`, `<-`, `se`, `enquanto`, `para`,
+operadores `+ - * / > < ==`, `e/ou/nao` e as funções do módulo; aceitar também
+as palavras-chave explícitas da descrição (por exemplo "SE / SENAO"); limitar o
+resultado ao catálogo implementado; ordenar pela ordem canônica da toolbox.
+Um campo `blocosPermitidos` **não** é exigido nem lido, porque o schema oficial
+não o possui.
+
+### EC-02 — Blocos do módulo Grid
+
+```text
+src/blocks/modulo-grid.js   definições: usar_grid, grid_iniciar, grid_visitar
+   ├─ serialização em BlocoSerializado (tipo + x/y/passo ou largura/altura)
+   ├─ src/generation/gerador.js  emite `usar "grid"` uma vez após o cabeçalho
+   │    e as chamadas grid_iniciar(...)/grid_visitar(...) no corpo
+   └─ src/core/runner.js  inalterado: a CLI real importa o plugin instalado
+```
+
+O gerador continua puro e sem DOM. A diretiva `usar "grid"` é deduzida dos
+blocos presentes, não de um campo separado do projeto, de modo que salvar e
+reabrir um projeto com módulo preserva o Portugol. O limite de 5 s do runner
+permanece; o Grid compilou e executou em 338 ms + 193 ms no ambiente de aceite.
+
+### Rastreabilidade do segundo incremento
+
+| ID | Cobertura no desenho |
+| --- | --- |
+| EC-01 | `src/missoes/`, `src/blocks/toolboxParaMissao.js`, `public/missoes/`, `contracts/mission-json.md`, tasks T043–T048 |
+| EC-02 | `src/blocks/modulo-grid.js`, `src/generation/gerador.js`, `tests/fixtures/grid-visitar.json`, `contracts/module-grid.md`, tasks T049–T054 |
+| Q-07 | R9, D-08, `docs/requisitos.md` (Grid escolhido) |
+| Q-08 | R8, D-07, `docs/requisitos.md` (JSON estático no formato do Desafios) |
 
 ## Estrutura do projeto
 
@@ -108,18 +160,24 @@ specs/001-editor-blocos-portugol/
 ├── contracts/           # Fase 1 (/speckit.plan)
 │   ├── core-runner.md
 │   ├── project-json.md
-│   └── portugol-generation.md
-└── tasks.md             # Fase 2 (/speckit.tasks - NÃO criado aqui)
+│   ├── portugol-generation.md
+│   ├── mission-json.md   # EC-01: schema e derivação
+│   └── module-grid.md    # EC-02: diretiva e funções públicas
+└── tasks.md             # Fase 2 (/speckit.tasks)
 ```
+
+Arquivos de missão no formato oficial ficam em `public/missoes/` para o
+navegador e são lidos pelos testes pelo mesmo caminho (sem duplicação).
 
 ### Código-fonte (raiz do repositório)
 
 ```text
 src/
-├── blocks/         # definições de blocos e toolbox (Blockly)
+├── blocks/         # definições de blocos, toolbox e filtro por missão (Blockly)
 ├── generation/     # gerador puro blocos → Portugol
 ├── persistence/    # envelope JSON, validação e restauração
 ├── core/           # adaptador/runner que invoca a CLI documentada do Core
+├── missoes/        # loader do schema do Desafios e derivação de blocos (EC-01)
 ├── ui/             # três painéis e ações do estudante
 └── messages/       # rótulos e erros em pt-BR
 
@@ -176,5 +234,9 @@ justificativas adicionais.
 | RT-03 | adaptador local + issue no módulo se faltar interface |
 | RT-04 | pt-BR obrigatório; `src/messages` |
 | RT-05 | etapa anterior encerrada |
-| RT-06 | escopo mínimo; EC/BX fora |
+| RT-06 | mínimo preservado; EC-01/EC-02 como segundo incremento; BX fora |
 | RT-07 | SDD e PRs com requisito atendido |
+| EC-01 | `src/missoes/` + `public/missoes/` + `contracts/mission-json.md` |
+| EC-02 | `src/blocks/modulo-grid.js` + `contracts/module-grid.md` |
+| Q-07 | `research.md` R9 + D-08 |
+| Q-08 | `research.md` R8 + D-07 |
