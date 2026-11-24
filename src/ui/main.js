@@ -1,16 +1,17 @@
 import * as Blockly from 'blockly';
 
 import { carregarProjetoNoWorkspace, serializarWorkspace } from '../blocks/serializacao.js';
+import { inicializarBloco, registrarBlocos } from '../blocks/registro.js';
 import { TOOLBOX } from '../blocks/toolbox.js';
-import { registrarBlocosLeiaEscreva } from '../blocks/leia-escreva.js';
 import MENSAGENS from '../messages/index.js';
 import { VERSAO_PROJETO } from '../persistence/schema.js';
 import { registrarObservador } from './estado.js';
+import { executarProjeto } from './execucao.js';
 import { obterElementos } from './layout.js';
 import { criarAcoesPersistencia } from './persistencia.js';
-import { exibirIndisponivel, exibirMensagem as registrarMensagem } from './saida-execucao.js';
+import { exibirIndisponivel, exibirMensagem as registrarMensagem, exibirResultado } from './saida-execucao.js';
 
-registrarBlocosLeiaEscreva(Blockly);
+registrarBlocos(Blockly);
 
 const elementos = obterElementos(document);
 const workspace = Blockly.inject(elementos.blocos, {
@@ -18,6 +19,16 @@ const workspace = Blockly.inject(elementos.blocos, {
   trashcan: true,
   scrollbars: true,
   grid: { spacing: 20, length: 3, colour: '#ddd', snap: true },
+});
+
+workspace.addChangeListener((evento) => {
+  if (evento.type !== Blockly.Events.BLOCK_CREATE || evento.isUiEvent) {
+    return;
+  }
+  const bloco = workspace.getBlockById(evento.blockId);
+  if (bloco) {
+    inicializarBloco(bloco, workspace);
+  }
 });
 
 function interpretarEntradas(texto) {
@@ -42,8 +53,8 @@ function obterProjeto() {
 
 let estadoDaInterface = {};
 
-function exibirMensagem(mensagem) {
-  estadoDaInterface = registrarMensagem(estadoDaInterface, mensagem, elementos.saida);
+function exibirMensagem(mensagem, status) {
+  estadoDaInterface = registrarMensagem(estadoDaInterface, mensagem, elementos.saida, status);
 }
 
 registrarObservador({
@@ -87,8 +98,14 @@ elementos.salvar.addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-elementos.executar.addEventListener('click', () => {
-  estadoDaInterface = exibirIndisponivel(estadoDaInterface, elementos.saida);
+elementos.executar.addEventListener('click', async () => {
+  exibirMensagem(MENSAGENS.compilando, 'compilando');
+  try {
+    const resultado = await executarProjeto(obterProjeto());
+    estadoDaInterface = exibirResultado(estadoDaInterface, resultado, elementos.saida);
+  } catch (erro) {
+    exibirMensagem(`${MENSAGENS.falhaAoChamarCore} ${erro.message}`);
+  }
 });
 
-exibirMensagem(MENSAGENS.compilacaoIndisponivel);
+exibirMensagem(MENSAGENS.pronto);

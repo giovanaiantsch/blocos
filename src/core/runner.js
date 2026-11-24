@@ -31,8 +31,9 @@ function texto(value) {
   return String(value ?? '');
 }
 
-function erroDeCompilacao(textoCompilacao, configuracao, duracaoMs) {
-  const semPrefixo = textoCompilacao
+function erroDeCompilacao(textoCompilacao, configuracao, duracaoMs, detalheProcesso = '') {
+  const fonte = textoCompilacao || detalheProcesso;
+  const semPrefixo = fonte
     .replace(configuracao.prefixoErro, '')
     .replace(configuracao.prefixoSucesso, '')
     .trim();
@@ -90,6 +91,7 @@ function executarCom(diretorioTemporario, opcoes) {
       stdoutCompilacao || texto(compilacao.stderr),
       configuracao,
       0,
+      texto(compilacao.error?.message),
     ));
   }
 

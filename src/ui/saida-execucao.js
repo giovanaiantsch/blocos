@@ -1,19 +1,19 @@
 import MENSAGENS from '../messages/index.js';
 
-function registrar(estado, mensagem, elemento) {
+function registrar(estado, mensagem, elemento, statusExecucao = 'erro') {
   if (elemento) {
     elemento.textContent = mensagem;
   }
   return {
     ...estado,
-    statusExecucao: 'erro',
+    statusExecucao,
     mensagens: [...(estado?.mensagens ?? []), mensagem],
   };
 }
 
 /** Mantém o projeto intacto: somente o painel de saída muda. */
-export function exibirMensagem(estado, mensagem, elemento) {
-  return registrar(estado, mensagem, elemento);
+export function exibirMensagem(estado, mensagem, elemento, statusExecucao) {
+  return registrar(estado, mensagem, elemento, statusExecucao);
 }
 
 export function exibirIndisponivel(estado, elemento) {
@@ -22,7 +22,12 @@ export function exibirIndisponivel(estado, elemento) {
 
 export function exibirResultado(estado, resultado, elemento) {
   const mensagem = resultado.saida || resultado.erro || MENSAGENS.problemaAoExecutar;
-  return registrar(estado, mensagem, elemento);
+  const status = resultado.status === 'sucesso'
+    ? 'sucesso'
+    : resultado.status === 'limite'
+      ? 'limite'
+      : 'erro';
+  return registrar(estado, mensagem, elemento, status);
 }
 
 export default exibirMensagem;
