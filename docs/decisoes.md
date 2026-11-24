@@ -36,3 +36,44 @@ Enquanto a tag não for confirmada, o botão "Executar" não finge sucesso: o
 painel "Saída da execução" exibe, em pt-BR,
 "Execução indisponível: tag do Core ainda não confirmada.", e o projeto aberto
 permanece intacto.
+
+> Atualização de 2026-11-23: com a ponte local de D-05 o botão passou a tentar
+> a CLI real. Se a tag/core ainda não estiver confirmado — ou o comando não
+> existir na máquina — a saída mostra o erro preciso do processo, sem simular
+> sucesso. A mensagem original de D-03 continua reservada como fallback.
+
+## D-04 — Sintaxe provisória dos novos blocos (T026/T028/T030/T032)
+
+A tag da turma (Q-01) continua pendente, então a implementação de operadores,
+`se/senão`, `enquanto` e `para` usa a **mesma tabela provisória** já adotada em
+`src/generation/sintaxe.js`, extraída do Guia da Linguagem público do Core:
+
+| Recurso | Forma provisória gerada |
+| --- | --- |
+| Operadores aritméticos | `+`, `-`, `*`, `/` |
+| Operadores relacionais/lógicos | `>`, `<`, `>=`, `<=`, `==`, `e`, `ou`, `nao` |
+| Decisão | `se <condição> entao` / `senao` / `fim_se` |
+| Laço condicional | `enquanto <condição> faca` / `fim_enquanto` |
+| Laço contado | `para <var> de <início> ate <fim> passo <passo> faca` / `fim_para` |
+
+`src/generation/operadores.js` é o catálogo único: o gerador, o schema de JSON
+e a toolbox consomem a mesma lista. Operadores fora desse catálogo são
+recusados com mensagem em pt-BR. Qualquer divergência confirmada em T007 deve
+ser corrigida primeiro em `sintaxe.js`/`operadores.js`, antes do aceite oficial.
+
+## D-05 — Ponte local entre o navegador e a CLI do Core
+
+O navegador não pode chamar `meupia`/`python` diretamente. `vite.config.js`
+registra o middleware `/api/executar`, que recebe o `ProjetoJSON`, gera o
+Portugol com o gerador puro e repassa ao adaptador de `src/core/runner.js`.
+Nada é mockado: a ponte usa a CLI configurada em `CONFIGURACAO_PROVISORIA`.
+
+Execução real tentada em 2026-11-23 no navegador (`http://127.0.0.1:5200/`):
+
+- Projeto canônico `3 → 6` carregado; Portugol gerado com `leia(x)`,
+  `x <- x * 2` e `escreva(x)`; entrada `3`.
+- Saída obtida: `Erro na compilação: spawnSync meupia ENOENT`.
+
+`meupia` não está instalado nesta máquina e a tag da turma não foi confirmada;
+portanto T017/T036 continuam pendentes. Nenhum mock foi criado em
+`tests/acceptance/`.

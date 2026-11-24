@@ -7,10 +7,21 @@ programa encaixando blocos, vê o Portugol correspondente nascer ao lado e o
 executa pelo meuPiá Core, tudo no navegador. É o primeiro degrau da trilha
 meuPiá, antes do Portugol escrito.
 
-> 🚧 **Em construção.** Este repositório é a base para o desenvolvimento do
-> editor com Spec-Driven Development. Ainda não há código.
+> 🚧 **Em construção.** Editor implementado com Spec-Driven Development; o
+> aceite final com o Core real depende da tag congelada da turma (Q-01).
 
-**Testes:** 0 · **Cobertura:** 0%
+**Testes:** 66 (17 arquivos, 0 falhas) · **Cobertura:** 93,25% de linhas e
+declarações · 81,81% de desvios · 94,11% de funções
+
+A cobertura é medida por `npm run coverage` e abrange o núcleo puro
+(`src/generation/`, `src/persistence/` e `src/core/`), conforme a spec. A
+interface e as definições de blocos são verificadas por testes unitários e
+pela validação no Blockly real; não entram no percentual acima.
+
+Os blocos de operadores, `se/senão`, `enquanto` e `para` usam a sintaxe
+**provisória** registrada em `docs/decisoes.md` (D-04) até a confirmação da tag.
+O botão Executar chama a CLI real do meuPiá Core por uma ponte local (D-05);
+sem o comando `meupia` instalado, a saída informa o erro do processo.
 
 ## 💡 Por que o meuPiá Blocos?
 Muitos iniciantes travam antes mesmo de escrever a primeira linha de Portugol.

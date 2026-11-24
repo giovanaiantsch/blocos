@@ -41,4 +41,7 @@ node_modules/
 dist/
 build/
 
+# Estado local do agente (não faz parte do projeto)
+.opencode/
+
 # Cobertura é versionada conforme plan.md: não ignorar coverage/
